@@ -43,4 +43,10 @@
       <Folder Include="SpacesAndResourceManagement\Application\OutboundServices\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Content Include="..\.dockerignore">
+        <Link>.dockerignore</Link>
+      </Content>
+    </ItemGroup>
+
 </Project>
