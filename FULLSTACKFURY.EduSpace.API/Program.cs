@@ -50,13 +50,20 @@ using FULLSTACKFURY.EduSpace.API.BreakdownManagement.Domain.Repositories;
 using FULLSTACKFURY.EduSpace.API.BreakdownManagement.Domain.Services;
 using FULLSTACKFURY.EduSpace.API.BreakdownManagement.Infrastructure.Persistence.EFC.Repositories;
 
-DotNetEnv.Env.Load("../.env");
+if (File.Exists("../.env"))
+{
+    DotNetEnv.Env.Load("../.env");
+}
 
 var builder = WebApplication.CreateBuilder(args);
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+Console.WriteLine("==========================================");
+Console.WriteLine($"🔍 DEBUG - ConnectionString: {connectionString}");
+Console.WriteLine($"🔍 DEBUG - Environment: {builder.Environment.EnvironmentName}");
+Console.WriteLine("==========================================");
 if (string.IsNullOrEmpty(connectionString))
 {
     throw new InvalidOperationException("Connection string not found.");
@@ -234,14 +241,16 @@ using (var scope = app.Services.CreateScope())
     context.Database.EnsureCreated();
 }
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
+
+
     app.UseSwagger();
     app.UseSwaggerUI();
-}
 
-app.UseHttpsRedirection();
+
+    if (app.Environment.IsDevelopment())
+    {
+        app.UseHttpsRedirection();
+    }
 
 if (app.Environment.IsDevelopment())
 {
