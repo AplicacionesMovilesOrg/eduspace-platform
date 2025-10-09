@@ -41,10 +41,17 @@ public class AuthenticationController(IAccountCommandService accountCommandServi
         [SwaggerResponse(StatusCodes.Status200OK, "The user was authenticated.", typeof(AuthenticatedAccountResource))]
         public async Task<IActionResult> SignIn([FromBody] SignInResource resource)
         {
-            var signInCommand = SignInCommandFromResourceAssembler.ToCommandFromResource(resource);
-            var authenticatedAccount = await accountCommandService.Handle(signInCommand);
-            var authenticatedAccountResource = AuthenticatedAccountResourceFromEntityAssembler
-                .ToResourceFromEntity(authenticatedAccount.account, authenticatedAccount.token);
-            return Ok(authenticatedAccountResource);
+            try
+            {
+                var signInCommand = SignInCommandFromResourceAssembler.ToCommandFromResource(resource);
+                var authenticatedAccount = await accountCommandService.Handle(signInCommand);
+                var authenticatedAccountResource = AuthenticatedAccountResourceFromEntityAssembler
+                    .ToResourceFromEntity(authenticatedAccount.account, authenticatedAccount.token);
+                return Ok(authenticatedAccountResource);
+            }
+            catch (Exception ex)
+            {
+                return Unauthorized(new { message = ex.Message });
+            }
         }
 }
