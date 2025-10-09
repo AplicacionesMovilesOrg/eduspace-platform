@@ -1,10 +1,10 @@
 version: '3.8'
 
-name: eduspace_experiments
+name: eduspace_mobile
 services:
   mysql:
     image: mysql:8.0
-    container_name: mysql_experiments
+    container_name: mysql_mobile
     restart: always
     env_file:
       - .env
