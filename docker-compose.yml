@@ -11,8 +11,8 @@ services:
     ports:
       - "${MYSQL_PORT}:3306"
     volumes:
-      - mysql_data_experiments:/var/lib/mysql
+      - mysql_data_mobile:/var/lib/mysql
 
 volumes:
-  mysql_data_experiments:
+  mysql_data_mobile:
 
