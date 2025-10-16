@@ -6,6 +6,6 @@ namespace FULLSTACKFURY.EduSpace.API.ReservationScheduling.Domain.Services;
 public interface IMeetingQueryService
 {
     Task<IEnumerable<Meeting>> Handle(GetAllMeetingsQuery query);
-    Task<IEnumerable<Meeting>> Handle(GetMeetingByIdQuery query);
+    Task<Meeting?> Handle(GetMeetingByIdQuery query);
     Task<IEnumerable<Meeting>> Handle(GetAllMeetingByAdminIdQuery query);
 }

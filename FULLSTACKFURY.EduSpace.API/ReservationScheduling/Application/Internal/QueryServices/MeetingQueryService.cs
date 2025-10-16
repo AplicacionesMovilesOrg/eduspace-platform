@@ -12,9 +12,9 @@ public class MeetingQueryService (IMeetingRepository meetingRepository) : IMeeti
         return await meetingRepository.ListAsync();
     }
 
-    public async Task<IEnumerable<Meeting>> Handle(GetMeetingByIdQuery query)
+    public async Task<Meeting?> Handle(GetMeetingByIdQuery query)
     {
-        return await meetingRepository.ListAsync();
+        return await meetingRepository.FindByIdAsync(query.MeetingId);
     }
 
     public Task<IEnumerable<Meeting>> Handle(GetAllMeetingByAdminIdQuery query)

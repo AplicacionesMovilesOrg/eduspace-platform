@@ -52,8 +52,26 @@ public class MeetingsController : ControllerBase
         var resources = meetings.Select(MeetingResourceFromEntityAssembler.ToResourceFromEntity);
         return Ok(resources);
     }
- 
+    
+    [HttpGet("meetings/{id:int}")]
+    [SwaggerOperation(
+        Summary = "Gets a meeting by id",
+        Description = "Retrieves a specific meeting by its ID",
+        OperationId = "GetMeetingById"
+    )]
+    [SwaggerResponse(200, "The meeting was retrieved", typeof(MeetingResource))]
+    [SwaggerResponse(404, "The meeting was not found")]
+    public async Task<IActionResult> GetMeetingById([FromRoute] int id)
+    {
+        var getMeetingByIdQuery = new GetMeetingByIdQuery(id);
+        var meeting = await meetingQueryService.Handle(getMeetingByIdQuery);
 
+        if (meeting is null) return NotFound();
+
+        var meetingResource = MeetingResourceFromEntityAssembler.ToResourceFromEntity(meeting);
+        return Ok(meetingResource);
+    }
+    
     [HttpPut("meetings/{id:int}")]
     [SwaggerOperation(
         Summary = "Updates a meeting",
