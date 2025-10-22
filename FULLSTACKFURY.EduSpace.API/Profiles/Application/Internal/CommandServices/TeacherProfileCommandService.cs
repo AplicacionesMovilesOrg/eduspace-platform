@@ -7,8 +7,10 @@ using FULLSTACKFURY.EduSpace.API.Shared.Domain.Repositories;
 
 namespace FULLSTACKFURY.EduSpace.API.Profiles.Application.Internal.CommandServices;
 
-public class TeacherProfileCommandService(ITeacherProfileRepository teacherProfileRepository
-    , IUnitOfWork unitOfWork, IExternalIamService externalIamService) 
+public class TeacherProfileCommandService(
+    ITeacherProfileRepository teacherProfileRepository,
+    IUnitOfWork unitOfWork,
+    IExternalIamService externalIamService)
     : ITeacherProfileCommandService
 {
     public async Task<TeacherProfile?> Handle(CreateTeacherProfileCommand command)
