@@ -1,3 +1,3 @@
 namespace FULLSTACKFURY.EduSpace.API.IAM.Domain.Model.Queries;
 
-public record GetAccountByIdQuery(int Id);
+public record GetAccountByIdQuery(string Id);
