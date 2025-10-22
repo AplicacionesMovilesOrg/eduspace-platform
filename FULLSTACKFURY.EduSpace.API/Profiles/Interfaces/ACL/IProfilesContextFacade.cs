@@ -2,6 +2,6 @@ namespace FULLSTACKFURY.EduSpace.API.Profiles.Interfaces.ACL;
 
 public interface IProfilesContextFacade
 {
-    bool ValidateTeacherProfileIdExistence(int id);
-    bool ValidateAdminProfileIdExistence(int id);
+    bool ValidateTeacherProfileIdExistence(string id);
+    bool ValidateAdminProfileIdExistence(string id);
 }

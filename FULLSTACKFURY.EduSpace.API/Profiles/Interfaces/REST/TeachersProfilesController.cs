@@ -3,16 +3,15 @@ using FULLSTACKFURY.EduSpace.API.Profiles.Domain.Model.Queries;
 using FULLSTACKFURY.EduSpace.API.Profiles.Domain.Services;
 using FULLSTACKFURY.EduSpace.API.Profiles.Interfaces.REST.Resources;
 using FULLSTACKFURY.EduSpace.API.Profiles.Interfaces.REST.Transform;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Formatters;
 
 namespace FULLSTACKFURY.EduSpace.API.Profiles.Interfaces.REST;
 
 [ApiController]
 [Route("api/v1/teachers-profiles")]
 [Produces(MediaTypeNames.Application.Json)]
-public class TeachersProfilesController(ITeacherProfileCommandService teacherProfileCommandService,
+public class TeachersProfilesController(
+    ITeacherProfileCommandService teacherProfileCommandService,
     ITeacherQueryService teacherQueryService)
     : ControllerBase
 {
@@ -30,13 +29,13 @@ public class TeachersProfilesController(ITeacherProfileCommandService teacherPro
     public async Task<IActionResult> GetAllTeacherProfiles()
     {
         var teacherProfiles = await teacherQueryService.Handle(new GetAllTeachersProfileQuery());
-        var teacherResources 
+        var teacherResources
             = teacherProfiles.Select(TeacherProfileResourceFromEntityAssembler.ToResourceFromEntity);
         return Ok(teacherResources);
     }
 
-    [HttpGet("{teacherId:int}")]
-    public async Task<IActionResult> GetTeacherProfileById([FromRoute] int teacherId)
+    [HttpGet("{teacherId}")]
+    public async Task<IActionResult> GetTeacherProfileById([FromRoute] string teacherId)
     {
         var teacherProfile = await teacherQueryService.Handle(new GetTeacherProfileByIdQuery(teacherId));
         if (teacherProfile is null) return NotFound();
