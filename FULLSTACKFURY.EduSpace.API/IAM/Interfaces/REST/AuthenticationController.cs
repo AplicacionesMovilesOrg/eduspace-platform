@@ -16,6 +16,7 @@ namespace FULLSTACKFURY.EduSpace.API.IAM.Interfaces.REST;
 public class AuthenticationController(IAccountCommandService accountCommandService)
     : ControllerBase
 {
+    [AllowAnonymous]
     [HttpPost("sign-up")]
     [SwaggerOperation(
         Summary = "Sign up",
