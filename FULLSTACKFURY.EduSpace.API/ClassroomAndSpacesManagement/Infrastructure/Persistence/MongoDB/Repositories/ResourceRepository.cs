@@ -20,9 +20,15 @@ public class ResourceRepository : BaseRepository<Resource>, IResourceRepository
 
     public override void Update(Resource entity)
     {
-        var filter = Builders<Resource>.Filter.Eq("_id", ObjectId.Parse(entity.Id));
+        FilterDefinition<Resource> filter;
+        if (ObjectId.TryParse(entity.Id, out var objectId))
+            filter = Builders<Resource>.Filter.Eq("_id", objectId);
+        else
+            filter = Builders<Resource>.Filter.Eq("_id", entity.Id); // por si el ID es string
+
         Collection.ReplaceOne(filter, entity);
     }
+
 
     public override async Task<IEnumerable<Resource>> ListAsync()
     {
@@ -31,11 +37,13 @@ public class ResourceRepository : BaseRepository<Resource>, IResourceRepository
 
     public override async Task<Resource?> FindByIdAsync(string id)
     {
-        var objectId = ObjectId.Parse(id);
-        return await BuildAggregationPipeline()
-            .Match(r => r.Id == id)
-            .FirstOrDefaultAsync();
+        var filter = ObjectId.TryParse(id, out var objectId)
+            ? Builders<Resource>.Filter.Eq("_id", objectId)
+            : Builders<Resource>.Filter.Eq("_id", id);
+
+        return await Collection.Find(filter).FirstOrDefaultAsync();
     }
+
 
     /// <summary>
     ///     Find resources by classroom ID
@@ -44,10 +52,21 @@ public class ResourceRepository : BaseRepository<Resource>, IResourceRepository
     /// </summary>
     public async Task<IEnumerable<Resource>> FindByClassroomIdAsync(string classroomId)
     {
-        return await BuildAggregationPipeline()
-            .Match(r => r.ClassroomId == classroomId)
+        FilterDefinition<Resource> filter;
+
+        if (ObjectId.TryParse(classroomId, out var objectId))
+            filter = Builders<Resource>.Filter.Eq("ClassroomId", objectId);
+        else
+            filter = Builders<Resource>.Filter.Eq("ClassroomId", classroomId);
+
+        return await Collection.Aggregate()
+            .Match(filter)
+            .Lookup("classrooms", "ClassroomId", "_id", "Classroom")
+            .Unwind("Classroom")
+            .As<Resource>()
             .ToListAsync();
     }
+
 
     /// <summary>
     ///     Check if a resource exists with the given name
