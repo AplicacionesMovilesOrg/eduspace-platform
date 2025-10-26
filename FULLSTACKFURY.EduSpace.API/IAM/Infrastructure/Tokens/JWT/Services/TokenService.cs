@@ -11,9 +11,8 @@ namespace FULLSTACKFURY.EduSpace.API.IAM.Infrastructure.Toknes.JWT.Services;
 
 public class TokenService(IOptions<TokenSettings> tokenSettings) : ITokenService
 {
-    
     private readonly TokenSettings _tokenSettings = tokenSettings.Value;
-    
+
     public string GenerateToken(Account account)
     {
         var secret = _tokenSettings.Secret;
@@ -22,7 +21,7 @@ public class TokenService(IOptions<TokenSettings> tokenSettings) : ITokenService
         {
             Subject = new ClaimsIdentity(new[]
             {
-                new Claim(ClaimTypes.Sid, account.Id.ToString()),
+                new Claim(ClaimTypes.Sid, account.Id),
                 new Claim(ClaimTypes.Name, account.Username),
                 new Claim(ClaimTypes.Role, account.GetRole())
             }),
@@ -35,7 +34,7 @@ public class TokenService(IOptions<TokenSettings> tokenSettings) : ITokenService
         return token;
     }
 
-    public async Task<int?> ValidateToken(string token)
+    public async Task<string?> ValidateToken(string token)
     {
         if (string.IsNullOrEmpty(token)) return null;
         var tokenHandler = new JsonWebTokenHandler();
@@ -51,8 +50,8 @@ public class TokenService(IOptions<TokenSettings> tokenSettings) : ITokenService
                 ClockSkew = TimeSpan.Zero
             });
             var jwtToken = (JsonWebToken)tokenValidationResult.SecurityToken;
-            var userId = int.Parse(jwtToken.Claims
-                .First(claim => claim.Type == ClaimTypes.Sid).Value);
+            var userId = jwtToken.Claims
+                .First(claim => claim.Type == ClaimTypes.Sid).Value;
             return userId;
         }
         catch (Exception e)

@@ -8,7 +8,7 @@ public class ExternalIamService(IIamContextFacade iamContextFacade) : IExternalI
     public async Task<AccountId> CreateAccount(string username, string password, string role)
     {
         var accountId = await iamContextFacade.CreateAccount(username, password, role);
-        if (accountId == 0) throw new Exception("Error creating the account");
+        if (string.IsNullOrEmpty(accountId)) throw new Exception("Error creating the account");
         return new AccountId(accountId);
     }
 }

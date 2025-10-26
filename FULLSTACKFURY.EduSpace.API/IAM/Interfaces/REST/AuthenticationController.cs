@@ -16,42 +16,41 @@ namespace FULLSTACKFURY.EduSpace.API.IAM.Interfaces.REST;
 public class AuthenticationController(IAccountCommandService accountCommandService)
     : ControllerBase
 {
-        [HttpPost("sign-up")]
-        [SwaggerOperation(
-            Summary = "Sign up",
-            Description = "Sign up with email and password",
-            OperationId = "SignUp",
-            Tags = new[] { "Authentication" })]
-        [SwaggerResponse(StatusCodes.Status200OK, "The user was signed up.")]
-        public async Task<IActionResult> SignUp([FromBody] SignUpResource resource)
-        {
-            var signUpCommand = SignUpCommandFromResourceAssembler.ToCommandFromResource(resource);
-            await accountCommandService.Handle(signUpCommand);
-            return Ok(new { message = "User created succesfully" });
-        }
+    [HttpPost("sign-up")]
+    [SwaggerOperation(
+        Summary = "Sign up",
+        Description = "Sign up with email and password",
+        OperationId = "SignUp",
+        Tags = new[] { "Authentication" })]
+    [SwaggerResponse(StatusCodes.Status200OK, "The user was signed up.")]
+    public async Task<IActionResult> SignUp([FromBody] SignUpResource resource)
+    {
+        var signUpCommand = SignUpCommandFromResourceAssembler.ToCommandFromResource(resource);
+        await accountCommandService.Handle(signUpCommand);
+        return Ok(new { message = "User created succesfully" });
+    }
 
-        [AllowAnonymous]
-        [HttpPost("sign-in")]
-        [SwaggerOperation(
-            Summary = "Sign in",
-            Description = "Sign in with email and password",
-            OperationId = "SignIn",
-            Tags = new[] { "Authentication" })]
-        
-        [SwaggerResponse(StatusCodes.Status200OK, "The user was authenticated.", typeof(AuthenticatedAccountResource))]
-        public async Task<IActionResult> SignIn([FromBody] SignInResource resource)
+    [AllowAnonymous]
+    [HttpPost("sign-in")]
+    [SwaggerOperation(
+        Summary = "Sign in",
+        Description = "Sign in with email and password",
+        OperationId = "SignIn",
+        Tags = new[] { "Authentication" })]
+    [SwaggerResponse(StatusCodes.Status200OK, "The user was authenticated.", typeof(AuthenticatedAccountResource))]
+    public async Task<IActionResult> SignIn([FromBody] SignInResource resource)
+    {
+        try
         {
-            try
-            {
-                var signInCommand = SignInCommandFromResourceAssembler.ToCommandFromResource(resource);
-                var authenticatedAccount = await accountCommandService.Handle(signInCommand);
-                var authenticatedAccountResource = AuthenticatedAccountResourceFromEntityAssembler
-                    .ToResourceFromEntity(authenticatedAccount.account, authenticatedAccount.token);
-                return Ok(authenticatedAccountResource);
-            }
-            catch (Exception ex)
-            {
-                return Unauthorized(new { message = ex.Message });
-            }
+            var signInCommand = SignInCommandFromResourceAssembler.ToCommandFromResource(resource);
+            var authenticatedAccount = await accountCommandService.Handle(signInCommand);
+            var authenticatedAccountResource = AuthenticatedAccountResourceFromEntityAssembler
+                .ToResourceFromEntity(authenticatedAccount.account, authenticatedAccount.token);
+            return Ok(authenticatedAccountResource);
         }
+        catch (Exception ex)
+        {
+            return Unauthorized(new { message = ex.Message });
+        }
+    }
 }
