@@ -56,35 +56,39 @@ using IExternalProfileService =
 if (File.Exists("../.env")) Env.Load("../.env");
 
 var builder = WebApplication.CreateBuilder(args);
-var port = Environment.GetEnvironmentVariable("PORT");
-if (!string.IsNullOrEmpty(port))
-{
-    builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
-}
+
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 
 // Register MongoDB custom serializers
 BsonSerializer.RegisterSerializer(new DateOnlySerializer());
 BsonSerializer.RegisterSerializer(new TimeOnlySerializer());
 
-var connectionString = builder.Configuration.GetConnectionString("MongoDbConnection");
+var connectionString = Environment.GetEnvironmentVariable("MONGODB_CONNECTION_STRING") 
+    ?? builder.Configuration.GetConnectionString("MongoDbConnection");
+
 Console.WriteLine("==========================================");
-Console.WriteLine($"🔍 DEBUG - MongoDB ConnectionString: {connectionString}");
+Console.WriteLine($"🔍 DEBUG - MongoDB Connected: {!string.IsNullOrEmpty(connectionString)}");
 Console.WriteLine($"🔍 DEBUG - Environment: {builder.Environment.EnvironmentName}");
+Console.WriteLine($"🔍 DEBUG - Port: {port}");
 Console.WriteLine("==========================================");
-if (string.IsNullOrEmpty(connectionString)) throw new InvalidOperationException("MongoDB connection string not found.");
+
+if (string.IsNullOrEmpty(connectionString)) 
+    throw new InvalidOperationException("MongoDB connection string not found.");
 
 // Add services to the container.
 builder.Services.AddRouting(options => options.LowercaseUrls = true);
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-
 
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("ProductionPolicy",
         policy =>
         {
-            policy.WithOrigins("https://eduspacewebapp.netlify.app")
+            policy.WithOrigins(
+                    "https://eduspacewebapp.netlify.app",
+                    "https://eduspace-platform-production-e783.up.railway.app"
+                )
                 .AllowAnyHeader()
                 .AllowAnyMethod()
                 .AllowCredentials();
@@ -146,18 +150,15 @@ builder.Services.AddSwaggerGen(c =>
     c.EnableAnnotations();
 });
 
-// Configure MongoDB
 builder.Services.Configure<MongoDbSettings>(options =>
 {
     options.ConnectionString = connectionString;
-    options.DatabaseName = builder.Configuration.GetSection("MongoDbSettings:DatabaseName").Value
+    options.DatabaseName = Environment.GetEnvironmentVariable("MONGODB_DATABASE_NAME")
+                           ?? builder.Configuration.GetSection("MongoDbSettings:DatabaseName").Value
                            ?? "eduspacedb";
 });
 
 builder.Services.AddSingleton<MongoDbContext>();
-
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(options => options.EnableAnnotations());
 
 //Shared BC
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -206,7 +207,6 @@ builder.Services.AddScoped<IReportCommandService, ReportCommandService>();
 builder.Services.AddScoped<IReportQueryService, ReportQueryService>();
 
 //Reservation Scheduling
-
 builder.Services.AddScoped<IMeetingRepository>(sp =>
 {
     var context = sp.GetRequiredService<MongoDbContext>();
@@ -218,7 +218,6 @@ builder.Services.AddScoped<IExternalClassroomService, ExternalClassroomServices>
 builder.Services.AddScoped<IRExternalProfileService, RExternalProfileServices>();
 
 // Spaces and Resource BC
-// Classrooms
 builder.Services
     .AddScoped<FULLSTACKFURY.EduSpace.API.ClassroomAndSpacesManagement.Application.OutboundServices.ACL.
         IExternalProfileService, ExternalProfileService>();
@@ -229,7 +228,7 @@ builder.Services.AddScoped<IClassroomRepository>(sp =>
 });
 builder.Services.AddScoped<IClassroomCommandService, ClassroomCommandService>();
 builder.Services.AddScoped<IClassroomQueryService, ClassroomQueryService>();
-// Resources
+
 builder.Services.AddScoped<IResourceRepository>(sp =>
 {
     var context = sp.GetRequiredService<MongoDbContext>();
@@ -240,8 +239,6 @@ builder.Services.AddScoped<IResourceQueryService, ResourceQueryService>();
 
 builder.Services.AddScoped<ISpacesAndResourceManagementFacade, SpacesAndResourceManagementFacade>();
 
-
-// Shared Areas
 builder.Services.AddScoped<ISharedAreaRepository>(sp =>
 {
     var context = sp.GetRequiredService<MongoDbContext>();
@@ -250,34 +247,30 @@ builder.Services.AddScoped<ISharedAreaRepository>(sp =>
 builder.Services.AddScoped<ISharedAreaCommandService, SharedAreaCommandService>();
 builder.Services.AddScoped<ISharedAreaQueryService, SharedAreaQueryService>();
 
-//Token Settings Configuration
-builder.Services.Configure<TokenSettings>(builder.Configuration.GetSection("TokenSettings"));
+builder.Services.Configure<TokenSettings>(options =>
+{
+    options.Secret = Environment.GetEnvironmentVariable("JWT_SECRET") 
+        ?? builder.Configuration["TokenSettings:Secret"]
+        ?? throw new InvalidOperationException("JWT Secret not configured");
+});
 
-// AccountRepository already registered above, removing duplicate
-builder.Services.AddScoped<IAccountCommandService, AccountCommandService>();
-builder.Services.AddScoped<IAccountQueryService, AccountQueryService>();
+var secretConfigured = !string.IsNullOrEmpty(
+    Environment.GetEnvironmentVariable("JWT_SECRET") 
+    ?? builder.Configuration["TokenSettings:Secret"]
+);
+Console.WriteLine($"🔑 JWT Secret configured: {secretConfigured}");
 
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IHashingService, HashingService>();
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
-builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
 var app = builder.Build();
 
-// MongoDB collections are created automatically on first use
-// No need for explicit database initialization
-
-
 app.UseSwagger();
 app.UseSwaggerUI();
 
-
-if (app.Environment.IsDevelopment()) 
-{
-    app.UseHttpsRedirection();
-}
 
 if (app.Environment.IsDevelopment())
     app.UseCors("DevelopmentPolicy");
@@ -285,7 +278,6 @@ else
     app.UseCors("ProductionPolicy");
 
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();
