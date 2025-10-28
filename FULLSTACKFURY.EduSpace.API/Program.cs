@@ -15,6 +15,7 @@ using FULLSTACKFURY.EduSpace.API.IAM.Domain.Services;
 using FULLSTACKFURY.EduSpace.API.IAM.Infrastructure.Hashing.BCrypt.Services;
 using FULLSTACKFURY.EduSpace.API.IAM.Infrastructure.Persistence.MongoDB.Repositories;
 using FULLSTACKFURY.EduSpace.API.IAM.Infrastructure.Pipeline.Middleware.Components;
+using FULLSTACKFURY.EduSpace.API.IAM.Infrastructure.Pipeline.Middleware.Extensions;
 using FULLSTACKFURY.EduSpace.API.IAM.Infrastructure.Toknes.JWT.Configuration;
 using FULLSTACKFURY.EduSpace.API.IAM.Infrastructure.Toknes.JWT.Services;
 using FULLSTACKFURY.EduSpace.API.IAM.Interfaces.ACL;
@@ -48,8 +49,10 @@ using FULLSTACKFURY.EduSpace.API.Shared.Domain.Repositories;
 using FULLSTACKFURY.EduSpace.API.Shared.Infrastructure.Persistence.MongoDB.Configuration;
 using FULLSTACKFURY.EduSpace.API.Shared.Infrastructure.Persistence.MongoDB.Repositories;
 using FULLSTACKFURY.EduSpace.API.Shared.Infrastructure.Persistence.MongoDB.Serializers;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.OpenApi.Models;
 using MongoDB.Bson.Serialization;
+using Microsoft.IdentityModel.Tokens;
 using IExternalProfileService =
     FULLSTACKFURY.EduSpace.API.ReservationsManagement.Application.Internal.OutboundServices.IExternalProfileService;
 
@@ -247,18 +250,35 @@ builder.Services.AddScoped<ISharedAreaRepository>(sp =>
 builder.Services.AddScoped<ISharedAreaCommandService, SharedAreaCommandService>();
 builder.Services.AddScoped<ISharedAreaQueryService, SharedAreaQueryService>();
 
+var jwtSecret = Environment.GetEnvironmentVariable("JWT_SECRET") 
+                ?? builder.Configuration["TokenSettings:Secret"]
+                ?? throw new InvalidOperationException("JWT Secret not configured");
+
+Console.WriteLine($"🔑 JWT Secret configured: True");
+
 builder.Services.Configure<TokenSettings>(options =>
 {
-    options.Secret = Environment.GetEnvironmentVariable("JWT_SECRET") 
-        ?? builder.Configuration["TokenSettings:Secret"]
-        ?? throw new InvalidOperationException("JWT Secret not configured");
+    options.Secret = jwtSecret;
 });
 
-var secretConfigured = !string.IsNullOrEmpty(
-    Environment.GetEnvironmentVariable("JWT_SECRET") 
-    ?? builder.Configuration["TokenSettings:Secret"]
-);
-Console.WriteLine($"🔑 JWT Secret configured: {secretConfigured}");
+// JWT Authentication
+builder.Services.AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = "Bearer";
+        options.DefaultChallengeScheme = "Bearer";
+    })
+    .AddJwtBearer("Bearer", options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(
+                System.Text.Encoding.UTF8.GetBytes(jwtSecret))
+        };
+    });
 
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IHashingService, HashingService>();
@@ -277,7 +297,21 @@ if (app.Environment.IsDevelopment())
 else
     app.UseCors("ProductionPolicy");
 
-app.UseAuthorization();
+app.UseAuthentication();  
+app.UseAuthorization(); 
+app.UseRequestAuthorization();
+
 app.MapControllers();
+
+app.Map("/error", (HttpContext http) =>
+{
+    var exFeature = http.Features.Get<IExceptionHandlerFeature>();
+    if (exFeature?.Error == null) return Results.Problem("Unknown error");
+    var err = exFeature.Error;
+    http.Response.StatusCode = 500;
+    return Results.Problem(detail: err.Message, title: "Unhandled exception");
+});
+
+
 
 app.Run();
