@@ -12,8 +12,8 @@ public record ProfileName
         LastName = lastName;
     }
 
-    public string FirstName { get; init; }
-    public string LastName { get; init; }
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
 
     public string FullName => $"{FirstName} {LastName}";
 }
