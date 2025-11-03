@@ -25,10 +25,10 @@ public class Profile
     [BsonRepresentation(BsonType.ObjectId)]
     public string Id { get; set; } = ObjectId.GenerateNewId().ToString();
 
-    [BsonElement("profile_name")] public ProfileName ProfileName { get; }
+    [BsonElement("profile_name")] public ProfileName ProfileName { get; set; }
 
     [BsonElement("profile_private_information")]
-    public ProfilePrivateInformation ProfilePrivateInformation { get; }
+    public ProfilePrivateInformation ProfilePrivateInformation { get; set; }
 
     [BsonElement("account_id")] public AccountId AccountId { get; private set; }
 

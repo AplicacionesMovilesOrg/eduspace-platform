@@ -16,10 +16,10 @@ public record ProfilePrivateInformation
         Phone = phone;
     }
 
-    public string Email { get; init; }
-    public string Dni { get; init; }
-    public string Address { get; init; }
-    public string Phone { get; init; }
+    public string Email { get; set; }
+    public string Dni { get; set; }
+    public string Address { get; set; }
+    public string Phone { get; set; }
     public string ObtainEmail => $"{Email}";
     public string ObtainDni => $"{Dni}";
 }
