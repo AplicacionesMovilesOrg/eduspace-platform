@@ -38,7 +38,7 @@ public class ClassroomCommandService(
         var classroom = await classroomRepository.FindByIdAsync(command.ClassroomId);
         if (classroom == null) throw new ArgumentException("Classroom not found.");
 
-        classroomRepository.Remove(classroom);
+        await classroomRepository.RemoveAsync(classroom);
 
         await unitOfWork.CompleteAsync();
     }

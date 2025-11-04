@@ -22,6 +22,14 @@ public class ClassroomRepository : BaseRepository<Classroom>, IClassroomReposito
     }
 
     /// <summary>
+    ///     Remove a classroom by its entity
+    /// </summary>
+    public async Task RemoveAsync(Classroom entity)
+    {
+        await base.RemoveAsync(entity.Id);
+    }
+
+    /// <summary>
     ///     Find classrooms by teacher ID
     /// </summary>
     public async Task<IEnumerable<Classroom>> FindByTeacherIdAsync(string teacherId)

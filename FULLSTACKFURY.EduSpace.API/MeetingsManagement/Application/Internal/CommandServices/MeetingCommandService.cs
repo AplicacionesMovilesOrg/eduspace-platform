@@ -35,7 +35,7 @@ public class MeetingCommandService(
         var meeting = await meetingRepository.FindByIdAsync(command.MeetingId);
         if (meeting == null) throw new ArgumentException("Meeting not found.");
 
-        meetingRepository.Remove(meeting);
+        await meetingRepository.RemoveAsync(meeting);
 
         await unitOfWork.CompleteAsync();
     }

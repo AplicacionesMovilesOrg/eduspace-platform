@@ -29,6 +29,13 @@ public class ResourceRepository : BaseRepository<Resource>, IResourceRepository
         Collection.ReplaceOne(filter, entity);
     }
 
+    /// <summary>
+    ///     Remove a resource asynchronously
+    /// </summary>
+    public async Task RemoveAsync(Resource entity)
+    {
+        await base.RemoveAsync(entity.Id);
+    }
 
     public override async Task<IEnumerable<Resource>> ListAsync()
     {

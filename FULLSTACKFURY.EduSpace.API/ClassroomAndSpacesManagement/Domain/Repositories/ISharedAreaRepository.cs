@@ -9,6 +9,11 @@ namespace FULLSTACKFURY.EduSpace.API.ClassroomAndSpacesManagement.Domain.Reposit
 public interface ISharedAreaRepository : IBaseRepository<SharedArea>
 {
     /// <summary>
+    ///     Remove a shared area asynchronously
+    /// </summary>
+    Task RemoveAsync(SharedArea entity);
+
+    /// <summary>
     ///     Verify if a shared area with specified title exists.
     /// </summary>
     /// <param name="name">

@@ -15,6 +15,14 @@ public class MeetingRepository : BaseRepository<Meeting>, IMeetingRepository
     }
 
     /// <summary>
+    ///     Remove a meeting asynchronously
+    /// </summary>
+    public async Task RemoveAsync(Meeting entity)
+    {
+        await base.RemoveAsync(entity.Id);
+    }
+
+    /// <summary>
     ///     Find all meetings by administrator ID
     /// </summary>
     public async Task<IEnumerable<Meeting>> FindAllByAdminIdAsync(string adminId)

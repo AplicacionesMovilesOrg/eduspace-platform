@@ -15,6 +15,14 @@ public class ReservationRepository : BaseRepository<Reservation>, IReservationRe
     }
 
     /// <summary>
+    ///     Remove a reservation asynchronously
+    /// </summary>
+    public async Task RemoveAsync(Reservation entity)
+    {
+        await base.RemoveAsync(entity.Id);
+    }
+
+    /// <summary>
     ///     Find all reservations by area ID
     /// </summary>
     public async Task<IEnumerable<Reservation>> FindAllByAreaIdAsync(string areaId)

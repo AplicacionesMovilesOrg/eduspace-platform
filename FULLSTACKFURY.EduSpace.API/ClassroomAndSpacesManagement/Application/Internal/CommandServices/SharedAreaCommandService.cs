@@ -34,7 +34,7 @@ public class SharedAreaCommandService(ISharedAreaRepository sharedAreaRepository
         var sharedArea = await sharedAreaRepository.FindByIdAsync(command.SharedAreaId);
         if (sharedArea == null) throw new ArgumentException("Meeting not found.");
 
-        sharedAreaRepository.Remove(sharedArea);
+        await sharedAreaRepository.RemoveAsync(sharedArea);
 
         await unitOfWork.CompleteAsync();
     }

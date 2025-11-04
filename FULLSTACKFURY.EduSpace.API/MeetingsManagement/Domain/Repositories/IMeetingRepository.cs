@@ -5,5 +5,6 @@ namespace FULLSTACKFURY.EduSpace.API.MeetingsManagement.Domain.Repositories;
 
 public interface IMeetingRepository : IBaseRepository<Meeting>
 {
+    Task RemoveAsync(Meeting entity);
     Task<IEnumerable<Meeting>> FindAllByAdminIdAsync(string adminId);
 }

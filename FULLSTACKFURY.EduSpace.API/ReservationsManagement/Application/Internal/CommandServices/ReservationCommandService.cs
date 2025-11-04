@@ -32,11 +32,12 @@ public class ReservationCommandService(
         return reservation;
     }
 
-    public async void Handle(DeleteReservationCommand command)
+    public async Task Handle(DeleteReservationCommand command)
     {
         var reservation = await reservationRepository.FindByIdAsync(command.ReservationId);
         if (reservation == null) throw new Exception("The reservation does not exist");
 
-        reservationRepository.Remove(reservation);
+        await reservationRepository.RemoveAsync(reservation);
+        await unitOfWork.CompleteAsync();
     }
 }

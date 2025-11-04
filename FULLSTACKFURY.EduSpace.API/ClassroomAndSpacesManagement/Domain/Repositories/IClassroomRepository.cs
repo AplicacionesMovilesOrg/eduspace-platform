@@ -31,4 +31,12 @@ public interface IClassroomRepository : IBaseRepository<Classroom>
     Task<bool> ExistsByNameAsync(string name);
 
     bool ExistsByClassroomId(string id);
+
+    /// <summary>
+    ///     Remove a classroom asynchronously
+    /// </summary>
+    /// <param name="entity">
+    ///     The classroom entity to remove
+    /// </param>
+    Task RemoveAsync(Classroom entity);
 }
