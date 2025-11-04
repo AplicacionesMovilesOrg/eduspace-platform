@@ -54,17 +54,12 @@ public class ResourceRepository : BaseRepository<Resource>, IResourceRepository
 
     /// <summary>
     ///     Find resources by classroom ID
-    ///     Note: This implementation assumes a ClassroomId property on Resource
-    ///     If the relationship is different, this needs adjustment
+    ///     Note: ClassroomId is stored as string in MongoDB, matching the ObjectId format
     /// </summary>
     public async Task<IEnumerable<Resource>> FindByClassroomIdAsync(string classroomId)
     {
-        FilterDefinition<Resource> filter;
-
-        if (ObjectId.TryParse(classroomId, out var objectId))
-            filter = Builders<Resource>.Filter.Eq("ClassroomId", objectId);
-        else
-            filter = Builders<Resource>.Filter.Eq("ClassroomId", classroomId);
+        // ClassroomId is stored as string in the database, so we compare as string
+        var filter = Builders<Resource>.Filter.Eq("ClassroomId", classroomId);
 
         return await Collection.Aggregate()
             .Match(filter)
