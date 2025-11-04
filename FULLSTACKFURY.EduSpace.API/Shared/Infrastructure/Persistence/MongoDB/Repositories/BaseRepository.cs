@@ -110,7 +110,17 @@ public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity> where T
     /// </summary>
     protected async Task RemoveAsync(string id)
     {
-        var filter = Builders<TEntity>.Filter.Eq("_id", id);
+        // Try to parse as ObjectId first, if that fails, use the string directly
+        FilterDefinition<TEntity> filter;
+        if (ObjectId.TryParse(id, out var objectId))
+        {
+            filter = Builders<TEntity>.Filter.Eq("_id", objectId);
+        }
+        else
+        {
+            filter = Builders<TEntity>.Filter.Eq("_id", id);
+        }
+
         await Collection.DeleteOneAsync(filter);
     }
 
