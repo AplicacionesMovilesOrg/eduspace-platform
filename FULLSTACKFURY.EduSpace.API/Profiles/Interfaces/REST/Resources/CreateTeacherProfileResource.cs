@@ -7,7 +7,6 @@ public record CreateTeacherProfileResource(
     string Dni,
     string Address,
     string Phone,
-    string AdministratorId,
     string Username,
     string Password)
 {
