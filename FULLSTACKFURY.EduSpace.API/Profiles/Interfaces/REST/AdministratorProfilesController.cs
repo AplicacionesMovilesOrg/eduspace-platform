@@ -1,4 +1,5 @@
 using System.Net.Mime;
+using FULLSTACKFURY.EduSpace.API.IAM.Infrastructure.Pipeline.Middleware.Attributes;
 using FULLSTACKFURY.EduSpace.API.Profiles.Domain.Model.Queries;
 using FULLSTACKFURY.EduSpace.API.Profiles.Domain.Services;
 using FULLSTACKFURY.EduSpace.API.Profiles.Interfaces.REST.Resources;
@@ -15,6 +16,7 @@ public class AdministratorProfilesController(
     IAdminProfileQueryService profileQueryService)
     : ControllerBase
 {
+    [AllowAnonymous]
     [HttpPost]
     public async Task<IActionResult> CreateAdministratorProfile([FromBody] CreateAdminProfileResource resource)
     {

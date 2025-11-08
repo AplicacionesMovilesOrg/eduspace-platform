@@ -13,6 +13,8 @@ public class RequestAuthorizationMiddleware(RequestDelegate next)
         IAccountQueryService userQueryService,
         ITokenService tokenService)
     {
+        Console.WriteLine($"🔍 RequestAuthorizationMiddleware - Path: {context.Request.Path}");
+
         // Check if the endpoint has AllowAnonymousAttribute (either custom or ASP.NET Core). If it does, skip authorization
         var endpoint = context.GetEndpoint();
         if (endpoint != null)
@@ -23,10 +25,13 @@ public class RequestAuthorizationMiddleware(RequestDelegate next)
 
             if (allowAnonymous)
             {
+                Console.WriteLine($"✅ AllowAnonymous detected for: {context.Request.Path}");
                 await next(context);
                 return;
             }
         }
+
+        Console.WriteLine($"🔒 Authorization required for: {context.Request.Path}");
 
         // Check if the endpoint has AuthorizeAttribute. If it does, authorize the request
         var token = context.Request.Headers.Authorization.FirstOrDefault()?.Split(" ").Last();

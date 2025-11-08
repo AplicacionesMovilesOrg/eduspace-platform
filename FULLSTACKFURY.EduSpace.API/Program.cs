@@ -291,14 +291,15 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 
+app.UseRouting();
 
 if (app.Environment.IsDevelopment())
     app.UseCors("DevelopmentPolicy");
 else
     app.UseCors("ProductionPolicy");
 
-app.UseAuthentication();  
-app.UseAuthorization(); 
+app.UseAuthentication();
+app.UseAuthorization();
 app.UseRequestAuthorization();
 
 app.MapControllers();
