@@ -2,5 +2,5 @@ namespace FULLSTACKFURY.EduSpace.API.MeetingsManagement.Application.Internal.Out
 
 public interface IExternalClassroomService
 {
-    bool ValidateClassroomId(string id);
+    Task<bool> ValidateClassroomId(string id); 
 }

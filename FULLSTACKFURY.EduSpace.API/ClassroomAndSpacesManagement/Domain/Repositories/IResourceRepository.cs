@@ -9,6 +9,11 @@ namespace FULLSTACKFURY.EduSpace.API.ClassroomAndSpacesManagement.Domain.Reposit
 public interface IResourceRepository : IBaseRepository<Resource>
 {
     /// <summary>
+    ///     Remove a resource asynchronously
+    /// </summary>
+    Task RemoveAsync(Resource entity);
+
+    /// <summary>
     ///     Adds a new resource to the repository.
     /// </summary>
     /// <param name="classroomId">

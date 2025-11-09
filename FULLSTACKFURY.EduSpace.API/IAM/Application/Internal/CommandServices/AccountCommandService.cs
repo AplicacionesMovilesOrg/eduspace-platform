@@ -36,8 +36,6 @@ public class AccountCommandService(
     //TODO: This should return a token
     public async Task<(Account account, string token)> Handle(SignInCommand command)
     {
-        Console.WriteLine("AAAAAAAAAAAAAA");
-        Console.WriteLine(accountRepository.ExistsByUsername(command.Username));
         var account = await accountRepository.FindByUsername(command.Username);
         if (account is null) throw new Exception("Invalid username or password");
         if (!hashingService.VerifyPassword(command.Password, account.PasswordHash))

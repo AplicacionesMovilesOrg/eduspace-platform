@@ -1,4 +1,5 @@
 using FULLSTACKFURY.EduSpace.API.Profiles.Domain.Model.Aggregates;
+using FULLSTACKFURY.EduSpace.API.Profiles.Domain.Model.ValueObjects;
 using FULLSTACKFURY.EduSpace.API.Profiles.Domain.Repositories;
 using FULLSTACKFURY.EduSpace.API.Shared.Infrastructure.Persistence.MongoDB.Repositories;
 using MongoDB.Driver;
@@ -17,8 +18,16 @@ public class AdminProfileRepository : BaseRepository<AdminProfile>, IAdminProfil
     /// <summary>
     ///     Check if an admin profile exists with the given ID
     /// </summary>
-    public bool ExistsByAdminProfileId(string adminProfileId)
+    public async Task<bool> ExistsByAdminProfileId(string adminProfileId)
     {
-        return ExistsAsync(profile => profile.Id == adminProfileId).GetAwaiter().GetResult();
+        return await ExistsAsync(profile => profile.Id == adminProfileId);
+    }
+
+    /// <summary>
+    ///     Find an admin profile by account ID
+    /// </summary>
+    public async Task<AdminProfile?> FindByAccountId(AccountId accountId)
+    {
+        return await FindAsync(profile => profile.AccountId == accountId);
     }
 }

@@ -6,13 +6,13 @@ public class ProfilesContextFacade(
     ITeacherProfileRepository teacherProfileRepository,
     IAdminProfileRepository adminProfileRepository) : IProfilesContextFacade
 {
-    public bool ValidateTeacherProfileIdExistence(string id)
+    public async Task<bool> ValidateTeacherProfileIdExistence(string teacherId)
     {
-        return teacherProfileRepository.ExistsByTeacherProfileId(id);
+        return await teacherProfileRepository.ExistsByTeacherProfileId(teacherId); 
     }
 
-    public bool ValidateAdminProfileIdExistence(string id)
+    public async Task<bool> ValidateAdminProfileIdExistence(string adminId)
     {
-        return adminProfileRepository.ExistsByAdminProfileId(id);
+        return await adminProfileRepository.ExistsByAdminProfileId(adminId); 
     }
 }

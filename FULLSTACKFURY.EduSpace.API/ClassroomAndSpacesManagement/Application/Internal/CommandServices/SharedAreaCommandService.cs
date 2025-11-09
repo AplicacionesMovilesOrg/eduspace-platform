@@ -32,9 +32,9 @@ public class SharedAreaCommandService(ISharedAreaRepository sharedAreaRepository
     public async Task Handle(DeleteSharedAreaCommand command)
     {
         var sharedArea = await sharedAreaRepository.FindByIdAsync(command.SharedAreaId);
-        if (sharedArea == null) throw new ArgumentException("Meeting not found.");
+        if (sharedArea == null) throw new ArgumentException("Shared area not found.");
 
-        sharedAreaRepository.Remove(sharedArea);
+        await sharedAreaRepository.RemoveAsync(sharedArea);
 
         await unitOfWork.CompleteAsync();
     }
@@ -49,7 +49,7 @@ public class SharedAreaCommandService(ISharedAreaRepository sharedAreaRepository
         sharedArea.UpdateCapacity(command.Capacity);
         sharedArea.UpdateDescription(command.Description);
 
-        sharedAreaRepository.Update(sharedArea);
+        await sharedAreaRepository.UpdateAsync(sharedArea);
         await unitOfWork.CompleteAsync();
 
         return sharedArea;

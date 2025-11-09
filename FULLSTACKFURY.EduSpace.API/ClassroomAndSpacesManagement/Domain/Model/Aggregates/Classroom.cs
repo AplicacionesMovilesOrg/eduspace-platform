@@ -74,9 +74,9 @@ public class Classroom
             Description = description;
     }
 
-    public void UpdateTeacherId(string? teacherId, Func<string, bool> verifyProfile)
+    public void UpdateTeacherId(string? teacherId)
     {
-        if (!string.IsNullOrWhiteSpace(teacherId) && verifyProfile(teacherId))
+        if (!string.IsNullOrWhiteSpace(teacherId))
             TeacherId = new TeacherId(teacherId);
     }
 }

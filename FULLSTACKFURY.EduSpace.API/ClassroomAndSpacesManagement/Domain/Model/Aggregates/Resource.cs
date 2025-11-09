@@ -33,14 +33,14 @@ public class Resource
     {
         Name = name;
         KindOfResource = kindOfResource;
-        ClassroomId = classroomId;
+        ClassroomId = ObjectId.Parse(classroomId);
     }
 
     public Resource(CreateResourceCommand command)
     {
         Name = command.Name;
         KindOfResource = command.KindOfResource;
-        ClassroomId = command.ClassroomId;
+        ClassroomId = ObjectId.Parse(command.ClassroomId);
     }
 
     public Resource(UpdateResourceCommand command)
@@ -48,7 +48,7 @@ public class Resource
         Id = command.Id;
         Name = command.Name;
         KindOfResource = command.KindOfResource;
-        ClassroomId = command.ClassroomId;
+        ClassroomId = ObjectId.Parse(command.ClassroomId);
     }
 
     [Key]
@@ -59,8 +59,8 @@ public class Resource
     public string Name { get; private set; }
     public string KindOfResource { get; private set; }
     public Classroom Classroom { get; internal set; }
-    public string ClassroomId { get; private set; }
-
+    [BsonRepresentation(BsonType.ObjectId)]
+    public ObjectId ClassroomId { get; private set; }
     public void UpdateName(string name)
     {
         if (!string.IsNullOrEmpty(name))
@@ -75,7 +75,12 @@ public class Resource
 
     public void UpdateClassroomId(string classroomId)
     {
-        if (!string.IsNullOrEmpty(classroomId) && classroomId != ClassroomId)
-            ClassroomId = classroomId;
+       
+        if (!string.IsNullOrEmpty(classroomId))
+        {
+            var newObjectId = ObjectId.Parse(classroomId);
+            if (newObjectId != ClassroomId)
+                ClassroomId = newObjectId;
+        }
     }
 }

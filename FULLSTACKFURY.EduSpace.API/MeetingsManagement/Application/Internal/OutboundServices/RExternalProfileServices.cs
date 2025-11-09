@@ -4,21 +4,23 @@ namespace FULLSTACKFURY.EduSpace.API.MeetingsManagement.Application.Internal.Out
 
 public class RExternalProfileServices(IProfilesContextFacade contextFacade) : IRExternalProfileService
 {
-    public bool ValidateTeacherExistence(string teacherId)
+    public async Task<bool> ValidateTeacherExistence(string teacherId) 
     {
-        return contextFacade.ValidateTeacherProfileIdExistence(teacherId);
+        return await contextFacade.ValidateTeacherProfileIdExistence(teacherId); 
     }
 
-    public bool ValidateAdminIdExistence(string adminid)
+    public async Task<bool> ValidateAdminIdExistence(string adminid) 
     {
-        return contextFacade.ValidateAdminProfileIdExistence(adminid);
+        return await contextFacade.ValidateAdminProfileIdExistence(adminid); 
     }
 
-    public bool ValidateTeachersExistence(List<string> teacherIds)
+    public async Task<bool> ValidateTeachersExistence(List<string> teacherIds) 
     {
         foreach (var teacherId in teacherIds)
-            if (!ValidateTeacherExistence(teacherId))
+        {
+            if (!await ValidateTeacherExistence(teacherId))
                 return false;
+        }
 
         return true;
     }

@@ -15,10 +15,10 @@ public class MeetingCommandService(
 {
     public async Task<Meeting?> Handle(CreateMeetingCommand command)
     {
-        if (!externalProfileService.ValidateAdminIdExistence(command.AdministratorId))
+        if (!await externalProfileService.ValidateAdminIdExistence(command.AdministratorId))
             throw new ArgumentException("Admin ID does not exist.");
 
-        if (!externalClassroomService.ValidateClassroomId(command.ClassroomId))
+        if (!await externalClassroomService.ValidateClassroomId(command.ClassroomId))
             throw new ArgumentException("Classroom does not exist.");
 
         var meeting = new Meeting(command);
@@ -35,7 +35,7 @@ public class MeetingCommandService(
         var meeting = await meetingRepository.FindByIdAsync(command.MeetingId);
         if (meeting == null) throw new ArgumentException("Meeting not found.");
 
-        meetingRepository.Remove(meeting);
+        await meetingRepository.RemoveAsync(meeting);
 
         await unitOfWork.CompleteAsync();
     }
@@ -51,10 +51,16 @@ public class MeetingCommandService(
         meeting.UpdateDate(command.Date);
         meeting.UpdateTime(command.Start, command.End);
 
-        meeting.UpdateAdministrator(command.AdministratorId, externalProfileService.ValidateAdminIdExistence);
-        meeting.UpdateClassroom(command.ClassroomId, externalClassroomService.ValidateClassroomId);
+        if (!await externalProfileService.ValidateAdminIdExistence(command.AdministratorId))
+            throw new ArgumentException("Admin ID does not exist.");
+    
+        if (!await externalClassroomService.ValidateClassroomId(command.ClassroomId))
+            throw new ArgumentException("Classroom does not exist.");
 
-        meetingRepository.Update(meeting);
+        meeting.UpdateAdministrator(command.AdministratorId);
+        meeting.UpdateClassroom(command.ClassroomId);
+
+        await meetingRepository.UpdateAsync(meeting);
         await unitOfWork.CompleteAsync();
 
         return meeting;
@@ -66,14 +72,14 @@ public class MeetingCommandService(
 
         if (meeting == null)
             throw new ArgumentException("Meeting not found.");
-        if (!externalProfileService.ValidateTeacherExistence(command.TeacherId))
+        if (!await externalProfileService.ValidateTeacherExistence(command.TeacherId))
             throw new ArgumentException("Teacher does not exist.");
 
         try
         {
             meeting.TeacherIdBuilder(command.TeacherId);
             meeting.AddTeacherToMeeting(command.TeacherId);
-            meetingRepository.Update(meeting);
+           await meetingRepository.UpdateAsync(meeting);
             await unitOfWork.CompleteAsync();
         }
         catch (Exception e)

@@ -4,8 +4,8 @@ namespace FULLSTACKFURY.EduSpace.API.MeetingsManagement.Application.Internal.Out
 
 public class ExternalClassroomServices(ISpacesAndResourceManagementFacade spacesFacade) : IExternalClassroomService
 {
-    public bool ValidateClassroomId(string id)
+    public async Task<bool> ValidateClassroomId(string id) 
     {
-        return spacesFacade.ValidateClassroomIdExistence(id);
+        return await spacesFacade.ValidateClassroomIdExistence(id); 
     }
 }

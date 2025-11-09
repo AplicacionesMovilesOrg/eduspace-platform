@@ -7,4 +7,5 @@ public interface IAdminProfileQueryService
 {
     Task<IEnumerable<AdminProfile>> Handle(GetAllAdministratorsProfileQuery query);
     Task<AdminProfile?> Handle(GetAdministratorProfileByIdQuery query);
+    Task<AdminProfile?> Handle(GetAdministratorProfileByAccountIdQuery query);
 }

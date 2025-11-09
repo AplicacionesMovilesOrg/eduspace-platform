@@ -69,11 +69,23 @@ public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity> where T
     /// <summary>
     ///     Update an entity in the collection
     /// </summary>
-    public virtual void Update(TEntity entity)
+    public virtual async Task UpdateAsync(TEntity entity)
     {
-        // MongoDB requires async operations, so we'll handle this in repositories
-        // For now, this is a placeholder that matches the interface
-        throw new NotImplementedException("Use UpdateAsync method in derived repositories");
+        var idProperty = typeof(TEntity).GetProperty("Id");
+        var idValue = idProperty?.GetValue(entity);
+    
+        FilterDefinition<TEntity> filter;
+    
+        if (idValue is string idString && ObjectId.TryParse(idString, out var objectId))
+        {
+            filter = Builders<TEntity>.Filter.Eq("_id", objectId);
+        }
+        else
+        {
+            filter = Builders<TEntity>.Filter.Eq("_id", idValue);
+        }
+    
+        await Collection.ReplaceOneAsync(filter, entity);
     }
 
     /// <summary>
@@ -93,24 +105,22 @@ public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity> where T
     {
         return await Collection.Find(_ => true).ToListAsync();
     }
-
-    // Helper methods for derived repositories
-
-    /// <summary>
-    ///     Update an entity by ID
-    /// </summary>
-    protected async Task UpdateAsync(string id, TEntity entity)
-    {
-        var filter = Builders<TEntity>.Filter.Eq("_id", id);
-        await Collection.ReplaceOneAsync(filter, entity);
-    }
-
     /// <summary>
     ///     Remove an entity by ID
     /// </summary>
     protected async Task RemoveAsync(string id)
     {
-        var filter = Builders<TEntity>.Filter.Eq("_id", id);
+        // Try to parse as ObjectId first, if that fails, use the string directly
+        FilterDefinition<TEntity> filter;
+        if (ObjectId.TryParse(id, out var objectId))
+        {
+            filter = Builders<TEntity>.Filter.Eq("_id", objectId);
+        }
+        else
+        {
+            filter = Builders<TEntity>.Filter.Eq("_id", id);
+        }
+
         await Collection.DeleteOneAsync(filter);
     }
 

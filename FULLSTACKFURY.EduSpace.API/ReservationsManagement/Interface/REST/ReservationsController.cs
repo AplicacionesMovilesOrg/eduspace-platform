@@ -22,7 +22,8 @@ public class ReservationsController(
         Description = "Creates a reservation to a specific area",
         OperationId = "CreateReservation"
     )]
-    [SwaggerResponse(201, "The category was created", typeof(ReservationResource))]
+    [SwaggerResponse(201, "The reservation was created", typeof(ReservationResource))]
+    [SwaggerResponse(400, "Bad request")]
     public async Task<IActionResult> CreateReservation([FromRoute] string teacherId, [FromRoute] string areaId,
         [FromBody] CreateReservationResource resource)
     {
@@ -33,10 +34,17 @@ public class ReservationsController(
         if (reservation is null) return BadRequest();
 
         var reservationResource = ReservationResourceFromEntityAssembler.ToResourceFromEntity(reservation);
-        return Ok(reservationResource);
+        return StatusCode(201, reservationResource);
     }
 
     [HttpGet("[controller]")]
+    [SwaggerOperation(
+        Summary = "Gets all reservations",
+        Description = "Gets all reservations from the system",
+        OperationId = "GetAllReservations"
+    )]
+    [SwaggerResponse(200, "Reservations retrieved successfully", typeof(IEnumerable<ReservationResource>))]
+
     public async Task<IActionResult> GetAllReservations()
     {
         var getAllReservationsQuery = new GetAllReservationsQuery();
@@ -46,6 +54,12 @@ public class ReservationsController(
     }
 
     [HttpGet("areas/{areaId}/[controller]")]
+    [SwaggerOperation(
+        Summary = "Gets  reservations by area ID",
+        Description = "Gets all reservations for a specific area",
+        OperationId = "GetAllReservationsByAreaId"
+    )]
+    [SwaggerResponse(200, "Reservations retrieved successfully", typeof(IEnumerable<ReservationResource>))]
     public async Task<IActionResult> GetAllReservationsByAreaId([FromRoute] string areaId)
     {
         var getAllReservationsByAreaIdQuery = new GetAllReservationsByAreaIdQuery(areaId);
@@ -55,12 +69,5 @@ public class ReservationsController(
 
         return Ok(resources);
     }
-    //
-    // [HttpGet("areas/{areaId:int}")]
-    // public async Task<IActionResult> GetAllReservationsByAreaIdMonthAndDay(int areaId, [FromQuery] int month,
-    //     [FromQuery] int day)
-    // {
-    //     var getAllReservationsByAreaIdMonthAndDayQuery = new GetAllReservationsByAreaIdAn
-    // }
-    //
+    
 }

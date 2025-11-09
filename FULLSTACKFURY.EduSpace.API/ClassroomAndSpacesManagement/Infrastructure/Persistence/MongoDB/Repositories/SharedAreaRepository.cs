@@ -15,6 +15,14 @@ public class SharedAreaRepository : BaseRepository<SharedArea>, ISharedAreaRepos
     }
 
     /// <summary>
+    ///     Remove a shared area asynchronously
+    /// </summary>
+    public async Task RemoveAsync(SharedArea entity)
+    {
+        await base.RemoveAsync(entity.Id);
+    }
+
+    /// <summary>
     ///     Check if a shared area exists with the given name
     /// </summary>
     public async Task<bool> ExistsByNameAsync(string name)

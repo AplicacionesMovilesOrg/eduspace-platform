@@ -7,6 +7,6 @@ public record CreateTeacherProfileCommand(
     string Dni,
     string Address,
     string Phone,
-    string AdministratorId,
     string Username,
-    string Password);
+    string Password,
+    string AdministratorId);

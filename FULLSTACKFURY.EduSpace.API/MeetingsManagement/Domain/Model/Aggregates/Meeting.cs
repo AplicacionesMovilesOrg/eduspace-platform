@@ -86,15 +86,15 @@ public partial class Meeting
         if (end.HasValue) EndTime = end.Value;
     }
 
-    public void UpdateAdministrator(string? adminId, Func<string, bool> validateAdmin)
+    public void UpdateAdministrator(string? adminId)
     {
-        if (!string.IsNullOrWhiteSpace(adminId) && validateAdmin(adminId))
+        if (!string.IsNullOrWhiteSpace(adminId))
             AdministratorId = new AdministratorId(adminId);
     }
 
-    public void UpdateClassroom(string? classroomId, Func<string, bool> validateClassroom)
+    public void UpdateClassroom(string? classroomId )
     {
-        if (!string.IsNullOrWhiteSpace(classroomId) && validateClassroom(classroomId))
+        if (!string.IsNullOrWhiteSpace(classroomId) )
             ClassroomId = new ClassroomId(classroomId);
     }
 }

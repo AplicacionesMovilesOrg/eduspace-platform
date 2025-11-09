@@ -44,7 +44,7 @@ public class ResourceCommandService(
         var resource = await resourceRepository.FindByIdAsync(command.ResourceId);
         if (resource == null) throw new ArgumentException("Resource not found.");
 
-        resourceRepository.Remove(resource);
+        await resourceRepository.RemoveAsync(resource);
 
         await unitOfWork.CompleteAsync();
     }
@@ -59,7 +59,7 @@ public class ResourceCommandService(
         resource.UpdateKindOfResource(command.KindOfResource);
         resource.UpdateClassroomId(command.ClassroomId);
 
-        resourceRepository.Update(resource);
+        await resourceRepository.UpdateAsync(resource);
         await unitOfWork.CompleteAsync();
 
         return resource;
