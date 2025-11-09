@@ -2,8 +2,8 @@ namespace FULLSTACKFURY.EduSpace.API.MeetingsManagement.Application.Internal.Out
 
 public interface IRExternalProfileService
 {
-    bool ValidateTeacherExistence(string teacherId);
-    bool ValidateAdminIdExistence(string adminId);
+    Task<bool> ValidateTeacherExistence(string teacherId); 
+    Task<bool> ValidateAdminIdExistence(string adminId); 
+    Task<bool> ValidateTeachersExistence(List<string> teacherIds); 
 
-    bool ValidateTeachersExistence(List<string> teacherIds);
 }
