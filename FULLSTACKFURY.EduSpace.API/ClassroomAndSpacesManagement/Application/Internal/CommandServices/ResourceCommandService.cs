@@ -59,7 +59,7 @@ public class ResourceCommandService(
         resource.UpdateKindOfResource(command.KindOfResource);
         resource.UpdateClassroomId(command.ClassroomId);
 
-        resourceRepository.Update(resource);
+        await resourceRepository.UpdateAsync(resource);
         await unitOfWork.CompleteAsync();
 
         return resource;
