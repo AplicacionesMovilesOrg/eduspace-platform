@@ -18,9 +18,9 @@ public class AdminProfileRepository : BaseRepository<AdminProfile>, IAdminProfil
     /// <summary>
     ///     Check if an admin profile exists with the given ID
     /// </summary>
-    public bool ExistsByAdminProfileId(string adminProfileId)
+    public async Task<bool> ExistsByAdminProfileId(string adminProfileId)
     {
-        return ExistsAsync(profile => profile.Id == adminProfileId).GetAwaiter().GetResult();
+        return await ExistsAsync(profile => profile.Id == adminProfileId);
     }
 
     /// <summary>
