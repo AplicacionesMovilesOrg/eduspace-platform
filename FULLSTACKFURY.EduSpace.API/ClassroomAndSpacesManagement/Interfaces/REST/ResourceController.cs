@@ -5,6 +5,7 @@ using FULLSTACKFURY.EduSpace.API.ClassroomAndSpacesManagement.Domain.Services;
 using FULLSTACKFURY.EduSpace.API.ClassroomAndSpacesManagement.Interfaces.REST.Resources.Resource;
 using FULLSTACKFURY.EduSpace.API.ClassroomAndSpacesManagement.Interfaces.REST.Transform.Resource;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
 
 namespace FULLSTACKFURY.EduSpace.API.ClassroomAndSpacesManagement.Interfaces.REST;
 
@@ -27,26 +28,33 @@ public class ResourceController : ControllerBase
     /// <summary>
     ///     Creates a new resource within a specific classroom.
     /// </summary>
-    [HttpPost] // La ruta es simplemente la base: .../{classroomId}/resources
+    [HttpPost]
     public async Task<IActionResult> CreateResource([FromRoute] string classroomId,
         [FromBody] CreateResourceResource resource)
     {
+        if (!ObjectId.TryParse(classroomId, out _))
+            return BadRequest("Invalid classroom ID format");
+
         var command = CreateResourceCommandFromResourceAssembler.ToCommandFromResource(classroomId, resource);
         var newResource = await _resourceCommandService.Handle(command);
-        if (newResource is null) return new NotFoundObjectResult(new { message = "Classroom not found" });
+        if (newResource is null) return NotFound(new { message = "Classroom not found" });
 
         var resourceDto = ResourceResourceFromEntityAssembler.ToResourceFromEntity(newResource);
 
         return CreatedAtAction(nameof(GetResourceById),
-            new { classroomId = newResource.ClassroomId, resourceId = newResource.Id }, resourceDto);
+            new { classroomId = newResource.ClassroomId.ToString(), resourceId = newResource.Id }, 
+            resourceDto);
     }
 
     /// <summary>
     ///     Gets all resources for a specific classroom.
     /// </summary>
-    [HttpGet] // La ruta es: .../{classroomId}/resources
+    [HttpGet]
     public async Task<IActionResult> GetAllResourcesByClassroomId([FromRoute] string classroomId)
     {
+        if (!ObjectId.TryParse(classroomId, out _))
+            return BadRequest("Invalid classroom ID format");
+
         var query = new GetAllResourcesByClassroomIdQuery(classroomId);
         var resources = await _resourceQueryService.Handle(query);
         var resourceDtos = resources.Select(ResourceResourceFromEntityAssembler.ToResourceFromEntity);
@@ -56,14 +64,17 @@ public class ResourceController : ControllerBase
     /// <summary>
     ///     Gets a specific resource by its ID from a specific classroom.
     /// </summary>
-    [HttpGet("{resourceId}")] // La ruta es: .../{classroomId}/resources/{resourceId}
+    [HttpGet("{resourceId}")]
     public async Task<IActionResult> GetResourceById([FromRoute] string classroomId, [FromRoute] string resourceId)
     {
         var query = new GetResourceByIdQuery(resourceId);
         var resource = await _resourceQueryService.Handle(query);
 
-        // Verificación de seguridad: el recurso debe pertenecer al aula especificada.
-        if (resource == null || resource.ClassroomId != classroomId) return NotFound();
+        if (resource == null) 
+            return NotFound();
+        
+        if (resource.ClassroomId.ToString() != classroomId)
+            return NotFound();
 
         var resourceDto = ResourceResourceFromEntityAssembler.ToResourceFromEntity(resource);
         return Ok(resourceDto);
@@ -72,13 +83,26 @@ public class ResourceController : ControllerBase
     /// <summary>
     ///     Updates an existing resource.
     /// </summary>
-    [HttpPut("{resourceId}")] // La ruta es: .../{classroomId}/resources/{resourceId}
-    public async Task<IActionResult> UpdateResource([FromRoute] string resourceId,
+    [HttpPut("{resourceId}")]
+    public async Task<IActionResult> UpdateResource(
+        [FromRoute] string classroomId,
+        [FromRoute] string resourceId,
         [FromBody] UpdateResourceResource resource)
     {
+        var existingQuery = new GetResourceByIdQuery(resourceId);
+        var existingResource = await _resourceQueryService.Handle(existingQuery);
+        
+        if (existingResource == null)
+            return NotFound("Resource not found");
+        
+        if (existingResource.ClassroomId.ToString() != classroomId)
+            return NotFound("Resource does not belong to the specified classroom");
+
         var command = UpdateResourceCommandFromResourceAssembler.ToCommandFromResource(resourceId, resource);
         var updatedResource = await _resourceCommandService.Handle(command);
-        if (updatedResource == null) return BadRequest("Could not update resource.");
+        
+        if (updatedResource == null) 
+            return BadRequest("Could not update resource");
 
         var resourceDto = ResourceResourceFromEntityAssembler.ToResourceFromEntity(updatedResource);
         return Ok(resourceDto);
@@ -87,11 +111,22 @@ public class ResourceController : ControllerBase
     /// <summary>
     ///     Deletes a resource by its ID.
     /// </summary>
-    [HttpDelete("{resourceId}")] // La ruta es: .../{classroomId}/resources/{resourceId}
-    public async Task<IActionResult> DeleteResource([FromRoute] string resourceId)
+    [HttpDelete("{resourceId}")]
+    public async Task<IActionResult> DeleteResource(
+        [FromRoute] string classroomId,
+        [FromRoute] string resourceId)
     {
+        var query = new GetResourceByIdQuery(resourceId);
+        var resource = await _resourceQueryService.Handle(query);
+        
+        if (resource == null)
+            return NotFound("Resource not found");
+        
+        if (resource.ClassroomId.ToString() != classroomId)
+            return NotFound("Resource does not belong to the specified classroom");
+
         var command = new DeleteResourceCommand(resourceId);
         await _resourceCommandService.Handle(command);
-        return NoContent(); // Respuesta 204 No Content es estándar para DELETE exitoso.
+        return NoContent();
     }
 }
