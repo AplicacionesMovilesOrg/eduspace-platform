@@ -2,5 +2,5 @@ namespace FULLSTACKFURY.EduSpace.API.ClassroomAndSpacesManagement.Application.Ou
 
 public interface IExternalProfileService
 {
-    public bool VerifyProfile(string profileId);
+    public  Task<bool> VerifyProfile(string profileId);
 }
