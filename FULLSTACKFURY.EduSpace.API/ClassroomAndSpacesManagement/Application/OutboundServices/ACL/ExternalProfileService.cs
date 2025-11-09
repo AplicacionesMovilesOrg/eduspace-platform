@@ -4,8 +4,8 @@ namespace FULLSTACKFURY.EduSpace.API.ClassroomAndSpacesManagement.Application.Ou
 
 public class ExternalProfileService(IProfilesContextFacade profilesContextFacade) : IExternalProfileService
 {
-    public bool VerifyProfile(string teacherProfileId)
+    public async Task<bool> VerifyProfile(string teacherProfileId)
     {
-        return profilesContextFacade.ValidateTeacherProfileIdExistence(teacherProfileId);
+        return await profilesContextFacade.ValidateTeacherProfileIdExistence(teacherProfileId);
     }
 }
