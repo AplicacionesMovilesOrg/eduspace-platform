@@ -25,8 +25,8 @@ public class TeacherProfileRepository : BaseRepository<TeacherProfile>, ITeacher
     /// <summary>
     ///     Check if a teacher profile exists with the given ID
     /// </summary>
-    public bool ExistsByTeacherProfileId(string teacherProfileId)
+    public  async Task<bool> ExistsByTeacherProfileId(string teacherProfileId)
     {
-        return ExistsAsync(profile => profile.Id == teacherProfileId).GetAwaiter().GetResult();
+        return await ExistsAsync(profile => profile.Id == teacherProfileId);
     }
 }
