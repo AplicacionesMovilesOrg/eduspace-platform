@@ -18,16 +18,7 @@ public class ResourceRepository : BaseRepository<Resource>, IResourceRepository
         _classrooms = collection.Database.GetCollection<Classroom>("classrooms");
     }
 
-    public override void Update(Resource entity)
-    {
-        FilterDefinition<Resource> filter;
-        if (ObjectId.TryParse(entity.Id, out var objectId))
-            filter = Builders<Resource>.Filter.Eq("_id", objectId);
-        else
-            filter = Builders<Resource>.Filter.Eq("_id", entity.Id); // por si el ID es string
-
-        Collection.ReplaceOne(filter, entity);
-    }
+    
 
     /// <summary>
     ///     Remove a resource asynchronously
@@ -58,8 +49,10 @@ public class ResourceRepository : BaseRepository<Resource>, IResourceRepository
     /// </summary>
     public async Task<IEnumerable<Resource>> FindByClassroomIdAsync(string classroomId)
     {
+        if (!ObjectId.TryParse(classroomId, out var objectId))
+            return Enumerable.Empty<Resource>();
         // ClassroomId is stored as string in the database, so we compare as string
-        var filter = Builders<Resource>.Filter.Eq("ClassroomId", classroomId);
+        var filter = Builders<Resource>.Filter.Eq("ClassroomId", objectId);
 
         return await Collection.Aggregate()
             .Match(filter)
