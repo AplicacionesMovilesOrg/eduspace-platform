@@ -1,7 +1,6 @@
 using FULLSTACKFURY.EduSpace.API.ClassroomAndSpacesManagement.Domain.Model.Aggregates;
 using FULLSTACKFURY.EduSpace.API.ClassroomAndSpacesManagement.Domain.Repositories;
 using FULLSTACKFURY.EduSpace.API.Shared.Infrastructure.Persistence.MongoDB.Repositories;
-using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace FULLSTACKFURY.EduSpace.API.ClassroomAndSpacesManagement.Infrastructure.Persistence.MongoDB.Repositories;
@@ -14,12 +13,7 @@ public class ClassroomRepository : BaseRepository<Classroom>, IClassroomReposito
     public ClassroomRepository(IMongoCollection<Classroom> collection) : base(collection)
     {
     }
-
-    public override void Update(Classroom entity)
-    {
-        var filter = Builders<Classroom>.Filter.Eq("_id", ObjectId.Parse(entity.Id));
-        Collection.ReplaceOne(filter, entity);
-    }
+    
 
     /// <summary>
     ///     Remove a classroom by its entity
@@ -48,8 +42,8 @@ public class ClassroomRepository : BaseRepository<Classroom>, IClassroomReposito
     /// <summary>
     ///     Check if a classroom exists with the given ID
     /// </summary>
-    public bool ExistsByClassroomId(string id)
+    public async Task<bool> ExistsByClassroomIdAsync(string id) 
     {
-        return ExistsAsync(c => c.Id == id).GetAwaiter().GetResult();
+        return await ExistsAsync(c => c.Id == id); 
     }
 }

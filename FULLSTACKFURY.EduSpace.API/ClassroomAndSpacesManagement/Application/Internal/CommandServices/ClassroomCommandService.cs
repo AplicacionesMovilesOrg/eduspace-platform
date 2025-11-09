@@ -24,7 +24,7 @@ public class ClassroomCommandService(
     /// <inheritdoc />
     public async Task<Classroom?> Handle(CreateClassroomCommand command)
     {
-        if (!profileService.VerifyProfile(command.TeacherId)) throw new Exception("Teacher not found");
+        if (!await profileService.VerifyProfile(command.TeacherId)) throw new Exception("Teacher not found");
         if (await classroomRepository.ExistsByNameAsync(command.Name))
             throw new Exception("Classroom with the same title already exists");
         var classroom = new Classroom(command);
@@ -52,9 +52,12 @@ public class ClassroomCommandService(
         classroom.UpdateName(command.Name);
         classroom.UpdateDescription(command.Description);
 
-        classroom.UpdateTeacherId(command.TeacherId, profileService.VerifyProfile);
+        if (!await profileService.VerifyProfile(command.TeacherId))
+            throw new ArgumentException("Teacher not found.");
+        
+        classroom.UpdateTeacherId(command.TeacherId); 
 
-        classroomRepository.Update(classroom);
+        await classroomRepository.UpdateAsync(classroom);
         await unitOfWork.CompleteAsync();
 
         return classroom;

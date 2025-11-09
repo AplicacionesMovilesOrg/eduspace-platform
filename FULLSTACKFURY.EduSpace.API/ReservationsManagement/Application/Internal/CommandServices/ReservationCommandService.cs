@@ -16,17 +16,15 @@ public class ReservationCommandService(
 {
     public async Task<Reservation?> Handle(CreateReservationCommand command)
     {
-        if (!profilesContextFacade.ValidateTeacherProfileIdExistence(command.TeacherId))
+        if (!await profilesContextFacade.ValidateTeacherProfileIdExistence(command.TeacherId))
             throw new ArgumentException("Teacher ID does not exist.");
 
-        // Assuming there is a validation method for AreaId in ISpacesAndResourceManagementFacade
-        // if (!spacesAndResourceManagementFacade.ValidateAreaIdExistence(command.AreaId))
-        //     throw new ArgumentException("Area ID does not exist.");
+        if (!await spacesAndResourceManagementFacade.ValidateClassroomIdExistence(command.AreaId))
+           throw new ArgumentException("Area ID does not exist.");
 
         var reservation = new Reservation(command);
 
         await reservationRepository.AddAsync(reservation);
-
         await unitOfWork.CompleteAsync();
 
         return reservation;
