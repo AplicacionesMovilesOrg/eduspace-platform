@@ -6,5 +6,6 @@ namespace FULLSTACKFURY.EduSpace.API.Profiles.Domain.Repositories;
 public interface ITeacherProfileRepository : IBaseRepository<TeacherProfile>
 {
     Task<IEnumerable<TeacherProfile>> FindAllTeachersByAdministratorIdAsync(string id);
-    Task<bool>ExistsByTeacherProfileId(string teacherProfileId);
+    Task<bool> ExistsByTeacherProfileId(string teacherProfileId);
+    Task RemoveAsync(TeacherProfile teacherProfile);
 }
