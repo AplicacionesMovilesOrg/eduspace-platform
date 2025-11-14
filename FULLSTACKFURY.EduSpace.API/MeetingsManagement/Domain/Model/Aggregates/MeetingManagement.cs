@@ -8,7 +8,7 @@ namespace FULLSTACKFURY.EduSpace.API.MeetingsManagement.Domain.Model.Aggregates;
 public partial class Meeting
 {
     [BsonElement("meeting_participants")]
-    public ICollection<MeetingSession> MeetingParticipants { get; } = new List<MeetingSession>();
+    public ICollection<MeetingSession> MeetingParticipants { get; set; } = new List<MeetingSession>();
 
     [NotMapped] public TeacherId TeacherId { get; set; }
 

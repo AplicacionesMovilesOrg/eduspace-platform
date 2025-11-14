@@ -69,34 +69,16 @@ public class MeetingCommandService(
 
     public async Task Handle(AddTeacherToMeetingCommand command)
     {
-        Console.WriteLine($"[AddTeacherToMeetingCommand] MeetingId: {command.MeetingId}, TeacherId: {command.TeacherId}");
-
         var meeting = await meetingRepository.FindByIdAsync(command.MeetingId);
 
         if (meeting == null)
-        {
-            Console.WriteLine("[AddTeacherToMeetingCommand] Meeting not found");
             throw new ArgumentException("Meeting not found.");
-        }
 
         if (!await externalProfileService.ValidateTeacherExistence(command.TeacherId))
-        {
-            Console.WriteLine("[AddTeacherToMeetingCommand] Teacher does not exist");
             throw new ArgumentException("Teacher does not exist.");
-        }
 
-        try
-        {
-            var participant = new MeetingSession(command.TeacherId, command.MeetingId);
-            await meetingRepository.AddTeacherToMeetingAsync(command.MeetingId, participant);
-            await unitOfWork.CompleteAsync();
-            Console.WriteLine($"[AddTeacherToMeetingCommand] Successfully added teacher {command.TeacherId} to meeting {command.MeetingId}");
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine($"[AddTeacherToMeetingCommand] Error: {e.Message}");
-            Console.WriteLine(e);
-            throw;
-        }
+        var participant = new MeetingSession(command.TeacherId, command.MeetingId);
+        await meetingRepository.AddTeacherToMeetingAsync(command.MeetingId, participant);
+        await unitOfWork.CompleteAsync();
     }
 }

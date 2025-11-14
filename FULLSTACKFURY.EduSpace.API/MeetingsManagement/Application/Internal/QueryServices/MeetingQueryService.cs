@@ -44,29 +44,16 @@ public class MeetingQueryService(
 
     private async Task LoadTeachersForMeeting(Meeting meeting)
     {
-        Console.WriteLine($"[LoadTeachersForMeeting] Meeting ID: {meeting.Id}");
-        Console.WriteLine($"[LoadTeachersForMeeting] MeetingParticipants count: {meeting.MeetingParticipants?.Count ?? 0}");
-
         if (meeting.MeetingParticipants == null || !meeting.MeetingParticipants.Any())
-        {
-            Console.WriteLine("[LoadTeachersForMeeting] No participants found, returning early");
             return;
-        }
 
         var teacherIds = meeting.MeetingParticipants.Select(mp => mp.TeacherId).ToList();
-        Console.WriteLine($"[LoadTeachersForMeeting] Teacher IDs to load: {string.Join(", ", teacherIds)}");
-
         var teachers = await externalProfileService.GetTeacherProfilesByIds(teacherIds);
         var teachersList = teachers.ToList();
-        Console.WriteLine($"[LoadTeachersForMeeting] Teachers loaded from service: {teachersList.Count}");
 
         foreach (var participant in meeting.MeetingParticipants)
         {
-            var teacher = teachersList.FirstOrDefault(t => t.Id == participant.TeacherId);
-            participant.Teacher = teacher;
-            Console.WriteLine($"[LoadTeachersForMeeting] Participant {participant.TeacherId} -> Teacher assigned: {teacher != null} (Name: {teacher?.ProfileName?.FirstName})");
+            participant.Teacher = teachersList.FirstOrDefault(t => t.Id == participant.TeacherId);
         }
-
-        Console.WriteLine($"[LoadTeachersForMeeting] Loading complete");
     }
 }

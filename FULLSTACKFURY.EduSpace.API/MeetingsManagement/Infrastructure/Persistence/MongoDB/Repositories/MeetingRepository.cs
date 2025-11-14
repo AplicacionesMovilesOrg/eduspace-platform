@@ -40,6 +40,5 @@ public class MeetingRepository : BaseRepository<Meeting>, IMeetingRepository
         var filter = Builders<Meeting>.Filter.Eq("_id", ObjectId.Parse(meetingId));
         var update = Builders<Meeting>.Update.Push("meeting_participants", participant);
         await Collection.UpdateOneAsync(filter, update);
-        Console.WriteLine($"[MeetingRepository] Added teacher {participant.TeacherId} to meeting {meetingId} using $push");
     }
 }
