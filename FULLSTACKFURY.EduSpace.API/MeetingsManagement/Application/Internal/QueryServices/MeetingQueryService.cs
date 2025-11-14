@@ -1,3 +1,4 @@
+using FULLSTACKFURY.EduSpace.API.MeetingsManagement.Application.Internal.OutboundServices;
 using FULLSTACKFURY.EduSpace.API.MeetingsManagement.Domain.Model.Aggregates;
 using FULLSTACKFURY.EduSpace.API.MeetingsManagement.Domain.Model.Queries;
 using FULLSTACKFURY.EduSpace.API.MeetingsManagement.Domain.Repositories;
@@ -5,20 +6,67 @@ using FULLSTACKFURY.EduSpace.API.MeetingsManagement.Domain.Services;
 
 namespace FULLSTACKFURY.EduSpace.API.MeetingsManagement.Application.Internal.QueryServices;
 
-public class MeetingQueryService(IMeetingRepository meetingRepository) : IMeetingQueryService
+public class MeetingQueryService(
+    IMeetingRepository meetingRepository,
+    IRExternalProfileService externalProfileService) : IMeetingQueryService
 {
     public async Task<IEnumerable<Meeting>> Handle(GetAllMeetingsQuery query)
     {
-        return await meetingRepository.ListAsync();
+        var meetings = await meetingRepository.ListAsync();
+        await LoadTeachersForMeetings(meetings);
+        return meetings;
     }
 
     public async Task<Meeting?> Handle(GetMeetingByIdQuery query)
     {
-        return await meetingRepository.FindByIdAsync(query.MeetingId);
+        var meeting = await meetingRepository.FindByIdAsync(query.MeetingId);
+        if (meeting != null)
+        {
+            await LoadTeachersForMeeting(meeting);
+        }
+        return meeting;
     }
 
-    public Task<IEnumerable<Meeting>> Handle(GetAllMeetingByAdminIdQuery query)
+    public async Task<IEnumerable<Meeting>> Handle(GetAllMeetingByAdminIdQuery query)
     {
-        return meetingRepository.FindAllByAdminIdAsync(query.AdminId);
+        var meetings = await meetingRepository.FindAllByAdminIdAsync(query.AdminId);
+        await LoadTeachersForMeetings(meetings);
+        return meetings;
+    }
+
+    private async Task LoadTeachersForMeetings(IEnumerable<Meeting> meetings)
+    {
+        foreach (var meeting in meetings)
+        {
+            await LoadTeachersForMeeting(meeting);
+        }
+    }
+
+    private async Task LoadTeachersForMeeting(Meeting meeting)
+    {
+        Console.WriteLine($"[LoadTeachersForMeeting] Meeting ID: {meeting.Id}");
+        Console.WriteLine($"[LoadTeachersForMeeting] MeetingParticipants count: {meeting.MeetingParticipants?.Count ?? 0}");
+
+        if (meeting.MeetingParticipants == null || !meeting.MeetingParticipants.Any())
+        {
+            Console.WriteLine("[LoadTeachersForMeeting] No participants found, returning early");
+            return;
+        }
+
+        var teacherIds = meeting.MeetingParticipants.Select(mp => mp.TeacherId).ToList();
+        Console.WriteLine($"[LoadTeachersForMeeting] Teacher IDs to load: {string.Join(", ", teacherIds)}");
+
+        var teachers = await externalProfileService.GetTeacherProfilesByIds(teacherIds);
+        var teachersList = teachers.ToList();
+        Console.WriteLine($"[LoadTeachersForMeeting] Teachers loaded from service: {teachersList.Count}");
+
+        foreach (var participant in meeting.MeetingParticipants)
+        {
+            var teacher = teachersList.FirstOrDefault(t => t.Id == participant.TeacherId);
+            participant.Teacher = teacher;
+            Console.WriteLine($"[LoadTeachersForMeeting] Participant {participant.TeacherId} -> Teacher assigned: {teacher != null} (Name: {teacher?.ProfileName?.FirstName})");
+        }
+
+        Console.WriteLine($"[LoadTeachersForMeeting] Loading complete");
     }
 }

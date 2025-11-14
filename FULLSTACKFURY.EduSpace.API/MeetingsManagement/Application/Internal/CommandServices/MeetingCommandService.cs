@@ -1,6 +1,7 @@
 using FULLSTACKFURY.EduSpace.API.MeetingsManagement.Application.Internal.OutboundServices;
 using FULLSTACKFURY.EduSpace.API.MeetingsManagement.Domain.Model.Aggregates;
 using FULLSTACKFURY.EduSpace.API.MeetingsManagement.Domain.Model.Commands;
+using FULLSTACKFURY.EduSpace.API.MeetingsManagement.Domain.Model.Entities;
 using FULLSTACKFURY.EduSpace.API.MeetingsManagement.Domain.Repositories;
 using FULLSTACKFURY.EduSpace.API.MeetingsManagement.Domain.Services;
 using FULLSTACKFURY.EduSpace.API.Shared.Domain.Repositories;
@@ -68,22 +69,32 @@ public class MeetingCommandService(
 
     public async Task Handle(AddTeacherToMeetingCommand command)
     {
+        Console.WriteLine($"[AddTeacherToMeetingCommand] MeetingId: {command.MeetingId}, TeacherId: {command.TeacherId}");
+
         var meeting = await meetingRepository.FindByIdAsync(command.MeetingId);
 
         if (meeting == null)
+        {
+            Console.WriteLine("[AddTeacherToMeetingCommand] Meeting not found");
             throw new ArgumentException("Meeting not found.");
+        }
+
         if (!await externalProfileService.ValidateTeacherExistence(command.TeacherId))
+        {
+            Console.WriteLine("[AddTeacherToMeetingCommand] Teacher does not exist");
             throw new ArgumentException("Teacher does not exist.");
+        }
 
         try
         {
-            meeting.TeacherIdBuilder(command.TeacherId);
-            meeting.AddTeacherToMeeting(command.TeacherId);
-           await meetingRepository.UpdateAsync(meeting);
+            var participant = new MeetingSession(command.TeacherId, command.MeetingId);
+            await meetingRepository.AddTeacherToMeetingAsync(command.MeetingId, participant);
             await unitOfWork.CompleteAsync();
+            Console.WriteLine($"[AddTeacherToMeetingCommand] Successfully added teacher {command.TeacherId} to meeting {command.MeetingId}");
         }
         catch (Exception e)
         {
+            Console.WriteLine($"[AddTeacherToMeetingCommand] Error: {e.Message}");
             Console.WriteLine(e);
             throw;
         }
