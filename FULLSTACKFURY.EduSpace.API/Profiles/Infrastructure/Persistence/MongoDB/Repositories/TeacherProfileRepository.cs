@@ -8,25 +8,26 @@ namespace FULLSTACKFURY.EduSpace.API.Profiles.Infrastructure.Persistence.MongoDB
 /// <summary>
 ///     MongoDB repository implementation for TeacherProfile aggregate
 /// </summary>
-public class TeacherProfileRepository : BaseRepository<TeacherProfile>, ITeacherProfileRepository
+public class TeacherProfileRepository 
+    : BaseRepository<TeacherProfile>, ITeacherProfileRepository
 {
-    public TeacherProfileRepository(IMongoCollection<TeacherProfile> collection) : base(collection)
+    public TeacherProfileRepository(IMongoCollection<TeacherProfile> collection) 
+        : base(collection)
     {
     }
 
-    /// <summary>
-    ///     Find all teachers by administrator ID
-    /// </summary>
     public async Task<IEnumerable<TeacherProfile>> FindAllTeachersByAdministratorIdAsync(string id)
     {
         return await FindAllAsync(teacher => teacher.AdministratorId == id);
     }
 
-    /// <summary>
-    ///     Check if a teacher profile exists with the given ID
-    /// </summary>
-    public  async Task<bool> ExistsByTeacherProfileId(string teacherProfileId)
+    public async Task<bool> ExistsByTeacherProfileId(string teacherProfileId)
     {
         return await ExistsAsync(profile => profile.Id == teacherProfileId);
+    }
+
+    public async Task RemoveAsync(TeacherProfile teacherProfile)
+    {
+        await base.RemoveAsync(teacherProfile.Id);
     }
 }
