@@ -4,8 +4,8 @@ namespace FULLSTACKFURY.EduSpace.API.ReservationsManagement.Application.Internal
 
 public class ExternalProfileServices(IProfilesContextFacade contextFacade) : IExternalProfileService
 {
-    public async Task<bool> ValidateTeacherIdExistence(string teacherId) 
+    public async Task<bool> ValidateTeacherIdExistence(string teacherId)
     {
-        return await contextFacade.ValidateTeacherProfileIdExistence(teacherId); 
+        return await contextFacade.ValidateTeacherProfileIdExistence(teacherId);
     }
 }

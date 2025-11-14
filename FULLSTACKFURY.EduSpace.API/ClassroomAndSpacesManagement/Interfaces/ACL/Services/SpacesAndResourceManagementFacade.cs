@@ -5,8 +5,8 @@ namespace FULLSTACKFURY.EduSpace.API.ClassroomAndSpacesManagement.Interfaces.ACL
 public class SpacesAndResourceManagementFacade(IClassroomRepository classroomRepository)
     : ISpacesAndResourceManagementFacade
 {
-    public async Task<bool> ValidateClassroomIdExistence(string classroomId) 
+    public async Task<bool> ValidateClassroomIdExistence(string classroomId)
     {
-        return await classroomRepository.ExistsByClassroomIdAsync(classroomId); 
+        return await classroomRepository.ExistsByClassroomIdAsync(classroomId);
     }
 }

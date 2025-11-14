@@ -5,7 +5,8 @@ namespace FULLSTACKFURY.EduSpace.API.Profiles.Interfaces.REST.Transform;
 
 public static class CreateTeacherProfileCommandFromResourceAssembler
 {
-    public static CreateTeacherProfileCommand ToCommandFromResource(CreateTeacherProfileResource resource, string administratorId)
+    public static CreateTeacherProfileCommand ToCommandFromResource(CreateTeacherProfileResource resource,
+        string administratorId)
     {
         return new CreateTeacherProfileCommand(resource.FirstName, resource.LastName
             , resource.Email, resource.Dni,

@@ -73,18 +73,14 @@ public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity> where T
     {
         var idProperty = typeof(TEntity).GetProperty("Id");
         var idValue = idProperty?.GetValue(entity);
-    
+
         FilterDefinition<TEntity> filter;
-    
+
         if (idValue is string idString && ObjectId.TryParse(idString, out var objectId))
-        {
             filter = Builders<TEntity>.Filter.Eq("_id", objectId);
-        }
         else
-        {
             filter = Builders<TEntity>.Filter.Eq("_id", idValue);
-        }
-    
+
         await Collection.ReplaceOneAsync(filter, entity);
     }
 
@@ -105,6 +101,7 @@ public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity> where T
     {
         return await Collection.Find(_ => true).ToListAsync();
     }
+
     /// <summary>
     ///     Remove an entity by ID
     /// </summary>
@@ -113,13 +110,9 @@ public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity> where T
         // Try to parse as ObjectId first, if that fails, use the string directly
         FilterDefinition<TEntity> filter;
         if (ObjectId.TryParse(id, out var objectId))
-        {
             filter = Builders<TEntity>.Filter.Eq("_id", objectId);
-        }
         else
-        {
             filter = Builders<TEntity>.Filter.Eq("_id", id);
-        }
 
         await Collection.DeleteOneAsync(filter);
     }

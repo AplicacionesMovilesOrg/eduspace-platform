@@ -42,7 +42,7 @@ public class ResourceController : ControllerBase
         var resourceDto = ResourceResourceFromEntityAssembler.ToResourceFromEntity(newResource);
 
         return CreatedAtAction(nameof(GetResourceById),
-            new { classroomId = newResource.ClassroomId.ToString(), resourceId = newResource.Id }, 
+            new { classroomId = newResource.ClassroomId.ToString(), resourceId = newResource.Id },
             resourceDto);
     }
 
@@ -70,9 +70,9 @@ public class ResourceController : ControllerBase
         var query = new GetResourceByIdQuery(resourceId);
         var resource = await _resourceQueryService.Handle(query);
 
-        if (resource == null) 
+        if (resource == null)
             return NotFound();
-        
+
         if (resource.ClassroomId.ToString() != classroomId)
             return NotFound();
 
@@ -91,17 +91,17 @@ public class ResourceController : ControllerBase
     {
         var existingQuery = new GetResourceByIdQuery(resourceId);
         var existingResource = await _resourceQueryService.Handle(existingQuery);
-        
+
         if (existingResource == null)
             return NotFound("Resource not found");
-        
+
         if (existingResource.ClassroomId.ToString() != classroomId)
             return NotFound("Resource does not belong to the specified classroom");
 
         var command = UpdateResourceCommandFromResourceAssembler.ToCommandFromResource(resourceId, resource);
         var updatedResource = await _resourceCommandService.Handle(command);
-        
-        if (updatedResource == null) 
+
+        if (updatedResource == null)
             return BadRequest("Could not update resource");
 
         var resourceDto = ResourceResourceFromEntityAssembler.ToResourceFromEntity(updatedResource);
@@ -118,10 +118,10 @@ public class ResourceController : ControllerBase
     {
         var query = new GetResourceByIdQuery(resourceId);
         var resource = await _resourceQueryService.Handle(query);
-        
+
         if (resource == null)
             return NotFound("Resource not found");
-        
+
         if (resource.ClassroomId.ToString() != classroomId)
             return NotFound("Resource does not belong to the specified classroom");
 

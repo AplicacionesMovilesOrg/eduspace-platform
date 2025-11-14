@@ -54,8 +54,8 @@ public class ClassroomCommandService(
 
         if (!await profileService.VerifyProfile(command.TeacherId))
             throw new ArgumentException("Teacher not found.");
-        
-        classroom.UpdateTeacherId(command.TeacherId); 
+
+        classroom.UpdateTeacherId(command.TeacherId);
 
         await classroomRepository.UpdateAsync(classroom);
         await unitOfWork.CompleteAsync();

@@ -92,9 +92,9 @@ public partial class Meeting
             AdministratorId = new AdministratorId(adminId);
     }
 
-    public void UpdateClassroom(string? classroomId )
+    public void UpdateClassroom(string? classroomId)
     {
-        if (!string.IsNullOrWhiteSpace(classroomId) )
+        if (!string.IsNullOrWhiteSpace(classroomId))
             ClassroomId = new ClassroomId(classroomId);
     }
 }

@@ -30,7 +30,7 @@ public class Account
 
     [BsonElement("role")]
     [BsonRepresentation(BsonType.String)]
-    public ERoles Role { get; private set; }
+    public ERoles Role { get; }
 
     public Account UpdateUsername(string username)
     {

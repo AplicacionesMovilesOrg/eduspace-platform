@@ -10,13 +10,13 @@ public static class UpdateTeacherProfileCommandFromResourceAssembler
         UpdateTeacherProfileResource resource)
     {
         return new UpdateTeacherProfileCommand(
-            TeacherId: teacherId,
-            FirstName: resource.FirstName,
-            LastName:  resource.LastName,
-            Email:     resource.Email,
-            Dni:       resource.Dni,
-            Address:   resource.Address,
-            Phone:     resource.Phone
+            teacherId,
+            resource.FirstName,
+            resource.LastName,
+            resource.Email,
+            resource.Dni,
+            resource.Address,
+            resource.Phone
         );
     }
 }

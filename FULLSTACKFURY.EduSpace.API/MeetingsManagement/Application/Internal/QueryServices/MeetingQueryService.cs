@@ -20,10 +20,7 @@ public class MeetingQueryService(
     public async Task<Meeting?> Handle(GetMeetingByIdQuery query)
     {
         var meeting = await meetingRepository.FindByIdAsync(query.MeetingId);
-        if (meeting != null)
-        {
-            await LoadTeachersForMeeting(meeting);
-        }
+        if (meeting != null) await LoadTeachersForMeeting(meeting);
         return meeting;
     }
 
@@ -36,10 +33,7 @@ public class MeetingQueryService(
 
     private async Task LoadTeachersForMeetings(IEnumerable<Meeting> meetings)
     {
-        foreach (var meeting in meetings)
-        {
-            await LoadTeachersForMeeting(meeting);
-        }
+        foreach (var meeting in meetings) await LoadTeachersForMeeting(meeting);
     }
 
     private async Task LoadTeachersForMeeting(Meeting meeting)
@@ -52,8 +46,6 @@ public class MeetingQueryService(
         var teachersList = teachers.ToList();
 
         foreach (var participant in meeting.MeetingParticipants)
-        {
             participant.Teacher = teachersList.FirstOrDefault(t => t.Id == participant.TeacherId);
-        }
     }
 }

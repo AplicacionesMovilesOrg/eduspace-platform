@@ -1,8 +1,9 @@
 using FULLSTACKFURY.EduSpace.API.IAM.Application.Internal.OutboundServices;
 using FULLSTACKFURY.EduSpace.API.IAM.Domain.Model.Queries;
 using FULLSTACKFURY.EduSpace.API.IAM.Domain.Services;
-using FULLSTACKFURY.EduSpace.API.IAM.Infrastructure.Pipeline.Middleware.Attributes;
 using Microsoft.AspNetCore.Authorization;
+using AllowAnonymousAttribute =
+    FULLSTACKFURY.EduSpace.API.IAM.Infrastructure.Pipeline.Middleware.Attributes.AllowAnonymousAttribute;
 
 namespace FULLSTACKFURY.EduSpace.API.IAM.Infrastructure.Pipeline.Middleware.Components;
 
@@ -20,7 +21,7 @@ public class RequestAuthorizationMiddleware(RequestDelegate next)
         if (endpoint != null)
         {
             var allowAnonymous = endpoint.Metadata.Any(m =>
-                m is Attributes.AllowAnonymousAttribute ||
+                m is AllowAnonymousAttribute ||
                 m is IAllowAnonymous);
 
             if (allowAnonymous)

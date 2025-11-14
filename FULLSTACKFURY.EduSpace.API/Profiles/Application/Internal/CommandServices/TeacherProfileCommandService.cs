@@ -36,12 +36,13 @@ public class TeacherProfileCommandService(
     {
         var teacherProfile = await teacherProfileRepository.FindByIdAsync(command.TeacherId);
         if (teacherProfile == null) throw new ArgumentException("Teacher not found");
-        
+
         await teacherProfileRepository.RemoveAsync(teacherProfile);
         await unitOfWork.CompleteAsync();
     }
+
     /// <summary>
-    /// Actualiza un TeacherProfile existente.
+    ///     Actualiza un TeacherProfile existente.
     /// </summary>
     public async Task<TeacherProfile?> Handle(UpdateTeacherProfileCommand command)
     {
@@ -75,5 +76,4 @@ public class TeacherProfileCommandService(
             return null;
         }
     }
-
 }

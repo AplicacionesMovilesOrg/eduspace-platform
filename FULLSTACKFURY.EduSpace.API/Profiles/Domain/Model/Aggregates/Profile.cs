@@ -39,6 +39,7 @@ public class Profile
     public string ProfileFullName => ProfileName.FullName;
     public string ProfileEmail => ProfilePrivateInformation.ObtainEmail;
     public string ProfileDni => ProfilePrivateInformation.ObtainDni;
+
     public void UpdateInformation(
         string firstName,
         string lastName,
@@ -51,5 +52,4 @@ public class Profile
         ProfilePrivateInformation = new ProfilePrivateInformation(email, dni, address, phone);
         UpdatedDate = DateTimeOffset.UtcNow;
     }
-
 }

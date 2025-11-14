@@ -13,7 +13,7 @@ public class ClassroomRepository : BaseRepository<Classroom>, IClassroomReposito
     public ClassroomRepository(IMongoCollection<Classroom> collection) : base(collection)
     {
     }
-    
+
 
     /// <summary>
     ///     Remove a classroom by its entity
@@ -42,8 +42,8 @@ public class ClassroomRepository : BaseRepository<Classroom>, IClassroomReposito
     /// <summary>
     ///     Check if a classroom exists with the given ID
     /// </summary>
-    public async Task<bool> ExistsByClassroomIdAsync(string id) 
+    public async Task<bool> ExistsByClassroomIdAsync(string id)
     {
-        return await ExistsAsync(c => c.Id == id); 
+        return await ExistsAsync(c => c.Id == id);
     }
 }

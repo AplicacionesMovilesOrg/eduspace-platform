@@ -1,3 +1,4 @@
+using System.Text;
 using DotNetEnv;
 using FULLSTACKFURY.EduSpace.API.ClassroomAndSpacesManagement.Application.Internal.CommandServices;
 using FULLSTACKFURY.EduSpace.API.ClassroomAndSpacesManagement.Application.Internal.QueryServices;
@@ -50,9 +51,9 @@ using FULLSTACKFURY.EduSpace.API.Shared.Infrastructure.Persistence.MongoDB.Confi
 using FULLSTACKFURY.EduSpace.API.Shared.Infrastructure.Persistence.MongoDB.Repositories;
 using FULLSTACKFURY.EduSpace.API.Shared.Infrastructure.Persistence.MongoDB.Serializers;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MongoDB.Bson.Serialization;
-using Microsoft.IdentityModel.Tokens;
 using IExternalProfileService =
     FULLSTACKFURY.EduSpace.API.ReservationsManagement.Application.Internal.OutboundServices.IExternalProfileService;
 
@@ -67,8 +68,8 @@ builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 BsonSerializer.RegisterSerializer(new DateOnlySerializer());
 BsonSerializer.RegisterSerializer(new TimeOnlySerializer());
 
-var connectionString = Environment.GetEnvironmentVariable("MONGODB_CONNECTION_STRING") 
-    ?? builder.Configuration.GetConnectionString("MongoDbConnection");
+var connectionString = Environment.GetEnvironmentVariable("MONGODB_CONNECTION_STRING")
+                       ?? builder.Configuration.GetConnectionString("MongoDbConnection");
 
 Console.WriteLine("==========================================");
 Console.WriteLine($"🔍 DEBUG - MongoDB Connected: {!string.IsNullOrEmpty(connectionString)}");
@@ -76,7 +77,7 @@ Console.WriteLine($"🔍 DEBUG - Environment: {builder.Environment.EnvironmentNa
 Console.WriteLine($"🔍 DEBUG - Port: {port}");
 Console.WriteLine("==========================================");
 
-if (string.IsNullOrEmpty(connectionString)) 
+if (string.IsNullOrEmpty(connectionString))
     throw new InvalidOperationException("MongoDB connection string not found.");
 
 // Add services to the container.
@@ -250,16 +251,13 @@ builder.Services.AddScoped<ISharedAreaRepository>(sp =>
 builder.Services.AddScoped<ISharedAreaCommandService, SharedAreaCommandService>();
 builder.Services.AddScoped<ISharedAreaQueryService, SharedAreaQueryService>();
 
-var jwtSecret = Environment.GetEnvironmentVariable("JWT_SECRET") 
+var jwtSecret = Environment.GetEnvironmentVariable("JWT_SECRET")
                 ?? builder.Configuration["TokenSettings:Secret"]
                 ?? throw new InvalidOperationException("JWT Secret not configured");
 
-Console.WriteLine($"🔑 JWT Secret configured: True");
+Console.WriteLine("🔑 JWT Secret configured: True");
 
-builder.Services.Configure<TokenSettings>(options =>
-{
-    options.Secret = jwtSecret;
-});
+builder.Services.Configure<TokenSettings>(options => { options.Secret = jwtSecret; });
 
 // JWT Authentication
 builder.Services.AddAuthentication(options =>
@@ -276,7 +274,7 @@ builder.Services.AddAuthentication(options =>
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(
-                System.Text.Encoding.UTF8.GetBytes(jwtSecret))
+                Encoding.UTF8.GetBytes(jwtSecret))
         };
     });
 
@@ -310,9 +308,8 @@ app.Map("/error", (HttpContext http) =>
     if (exFeature?.Error == null) return Results.Problem("Unknown error");
     var err = exFeature.Error;
     http.Response.StatusCode = 500;
-    return Results.Problem(detail: err.Message, title: "Unhandled exception");
+    return Results.Problem(err.Message, title: "Unhandled exception");
 });
-
 
 
 app.Run();

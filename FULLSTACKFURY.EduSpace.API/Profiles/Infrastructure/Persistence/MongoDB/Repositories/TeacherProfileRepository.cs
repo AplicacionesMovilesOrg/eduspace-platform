@@ -8,10 +8,10 @@ namespace FULLSTACKFURY.EduSpace.API.Profiles.Infrastructure.Persistence.MongoDB
 /// <summary>
 ///     MongoDB repository implementation for TeacherProfile aggregate
 /// </summary>
-public class TeacherProfileRepository 
+public class TeacherProfileRepository
     : BaseRepository<TeacherProfile>, ITeacherProfileRepository
 {
-    public TeacherProfileRepository(IMongoCollection<TeacherProfile> collection) 
+    public TeacherProfileRepository(IMongoCollection<TeacherProfile> collection)
         : base(collection)
     {
     }

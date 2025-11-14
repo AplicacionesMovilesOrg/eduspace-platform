@@ -2,5 +2,5 @@ namespace FULLSTACKFURY.EduSpace.API.ReservationsManagement.Application.Internal
 
 public interface IExternalProfileService
 {
-   Task<bool> ValidateTeacherIdExistence(string teacherId);
+    Task<bool> ValidateTeacherIdExistence(string teacherId);
 }

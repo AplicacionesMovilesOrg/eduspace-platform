@@ -18,10 +18,8 @@ public class RExternalProfileServices(IProfilesContextFacade contextFacade) : IR
     public async Task<bool> ValidateTeachersExistence(List<string> teacherIds)
     {
         foreach (var teacherId in teacherIds)
-        {
             if (!await ValidateTeacherExistence(teacherId))
                 return false;
-        }
 
         return true;
     }

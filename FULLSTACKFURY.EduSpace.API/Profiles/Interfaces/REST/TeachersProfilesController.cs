@@ -2,6 +2,7 @@ using System.Net.Mime;
 using FULLSTACKFURY.EduSpace.API.IAM.Domain.Model.Aggregates;
 using FULLSTACKFURY.EduSpace.API.Profiles.Domain.Model.Commands;
 using FULLSTACKFURY.EduSpace.API.Profiles.Domain.Model.Queries;
+using FULLSTACKFURY.EduSpace.API.Profiles.Domain.Model.ValueObjects;
 using FULLSTACKFURY.EduSpace.API.Profiles.Domain.Services;
 using FULLSTACKFURY.EduSpace.API.Profiles.Interfaces.REST.Resources;
 using FULLSTACKFURY.EduSpace.API.Profiles.Interfaces.REST.Transform;
@@ -29,7 +30,7 @@ public class TeachersProfilesController(
             return Unauthorized(new { message = "Authentication required" });
 
         var adminProfile = await adminProfileQueryService.Handle(
-            new GetAdministratorProfileByAccountIdQuery(new Domain.Model.ValueObjects.AccountId(account.Id)));
+            new GetAdministratorProfileByAccountIdQuery(new AccountId(account.Id)));
 
         if (adminProfile is null)
             return Forbid("Only administrators can create teacher profiles");

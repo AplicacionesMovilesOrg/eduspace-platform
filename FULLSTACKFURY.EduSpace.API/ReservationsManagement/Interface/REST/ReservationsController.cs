@@ -44,7 +44,6 @@ public class ReservationsController(
         OperationId = "GetAllReservations"
     )]
     [SwaggerResponse(200, "Reservations retrieved successfully", typeof(IEnumerable<ReservationResource>))]
-
     public async Task<IActionResult> GetAllReservations()
     {
         var getAllReservationsQuery = new GetAllReservationsQuery();
@@ -69,5 +68,4 @@ public class ReservationsController(
 
         return Ok(resources);
     }
-    
 }

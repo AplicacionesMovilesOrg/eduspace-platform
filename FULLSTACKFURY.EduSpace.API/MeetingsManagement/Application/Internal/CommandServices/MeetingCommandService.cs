@@ -54,7 +54,7 @@ public class MeetingCommandService(
 
         if (!await externalProfileService.ValidateAdminIdExistence(command.AdministratorId))
             throw new ArgumentException("Admin ID does not exist.");
-    
+
         if (!await externalClassroomService.ValidateClassroomId(command.ClassroomId))
             throw new ArgumentException("Classroom does not exist.");
 

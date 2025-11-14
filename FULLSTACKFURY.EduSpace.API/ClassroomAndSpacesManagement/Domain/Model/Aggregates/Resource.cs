@@ -59,8 +59,10 @@ public class Resource
     public string Name { get; private set; }
     public string KindOfResource { get; private set; }
     public Classroom Classroom { get; internal set; }
+
     [BsonRepresentation(BsonType.ObjectId)]
     public ObjectId ClassroomId { get; private set; }
+
     public void UpdateName(string name)
     {
         if (!string.IsNullOrEmpty(name))
@@ -75,7 +77,6 @@ public class Resource
 
     public void UpdateClassroomId(string classroomId)
     {
-       
         if (!string.IsNullOrEmpty(classroomId))
         {
             var newObjectId = ObjectId.Parse(classroomId);

@@ -28,11 +28,9 @@ public class ProfilesContextFacade(
         foreach (var teacherId in teacherIds)
         {
             var teacher = await teacherProfileRepository.FindByIdAsync(teacherId);
-            if (teacher != null)
-            {
-                teachers.Add(teacher);
-            }
+            if (teacher != null) teachers.Add(teacher);
         }
+
         return teachers;
     }
 }

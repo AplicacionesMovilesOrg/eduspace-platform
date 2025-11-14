@@ -18,7 +18,6 @@ public class ResourceRepository : BaseRepository<Resource>, IResourceRepository
         _classrooms = collection.Database.GetCollection<Classroom>("classrooms");
     }
 
-    
 
     /// <summary>
     ///     Remove a resource asynchronously
