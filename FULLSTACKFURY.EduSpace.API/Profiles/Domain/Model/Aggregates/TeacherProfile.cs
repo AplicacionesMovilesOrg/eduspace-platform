@@ -1,15 +1,14 @@
 using FULLSTACKFURY.EduSpace.API.Profiles.Domain.Model.Commands;
 using FULLSTACKFURY.EduSpace.API.Profiles.Domain.Model.ValueObjects;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace FULLSTACKFURY.EduSpace.API.Profiles.Domain.Model.Aggregates;
 
 public class TeacherProfile : Profile
 {
-    public int AdministratorId { get; private set; }
-    
     public TeacherProfile(string firstName, string lastName, string email
         , string dni, string address, string phone, AccountId accountId
-        , int administratorId) 
+        , string administratorId)
         : base(firstName, lastName, email, dni, address, phone, accountId)
     {
         AdministratorId = administratorId;
@@ -22,5 +21,9 @@ public class TeacherProfile : Profile
         AdministratorId = command.AdministratorId;
     }
 
-    public TeacherProfile() { }
+    public TeacherProfile()
+    {
+    }
+
+    [BsonElement("administrator_id")] public string AdministratorId { get; private set; }
 }

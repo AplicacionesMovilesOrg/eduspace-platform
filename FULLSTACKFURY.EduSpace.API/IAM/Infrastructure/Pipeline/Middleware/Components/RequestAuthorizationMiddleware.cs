@@ -1,7 +1,9 @@
 using FULLSTACKFURY.EduSpace.API.IAM.Application.Internal.OutboundServices;
 using FULLSTACKFURY.EduSpace.API.IAM.Domain.Model.Queries;
 using FULLSTACKFURY.EduSpace.API.IAM.Domain.Services;
-using FULLSTACKFURY.EduSpace.API.IAM.Infrastructure.Pipeline.Middleware.Attributes;
+using Microsoft.AspNetCore.Authorization;
+using AllowAnonymousAttribute =
+    FULLSTACKFURY.EduSpace.API.IAM.Infrastructure.Pipeline.Middleware.Attributes.AllowAnonymousAttribute;
 
 namespace FULLSTACKFURY.EduSpace.API.IAM.Infrastructure.Pipeline.Middleware.Components;
 
@@ -12,25 +14,34 @@ public class RequestAuthorizationMiddleware(RequestDelegate next)
         IAccountQueryService userQueryService,
         ITokenService tokenService)
     {
-        Console.Write("Entering InvokeAsync");
-        // Check if the endpoint has AllowAnonymousAttribute. If it does, skip authorization
-        var allowAnonymous = context.Request.HttpContext.GetEndpoint()!.Metadata
-            .Any(m => m is AllowAnonymousAttribute);
-        Console.Write($"AllowAnonymous: {allowAnonymous}");
-        if (allowAnonymous)
+        Console.WriteLine($"🔍 RequestAuthorizationMiddleware - Path: {context.Request.Path}");
+
+        // Check if the endpoint has AllowAnonymousAttribute (either custom or ASP.NET Core). If it does, skip authorization
+        var endpoint = context.GetEndpoint();
+        if (endpoint != null)
         {
-            await next(context);
-            return;
+            var allowAnonymous = endpoint.Metadata.Any(m =>
+                m is AllowAnonymousAttribute ||
+                m is IAllowAnonymous);
+
+            if (allowAnonymous)
+            {
+                Console.WriteLine($"✅ AllowAnonymous detected for: {context.Request.Path}");
+                await next(context);
+                return;
+            }
         }
+
+        Console.WriteLine($"🔒 Authorization required for: {context.Request.Path}");
+
         // Check if the endpoint has AuthorizeAttribute. If it does, authorize the request
-        Console.Write("Entering Authorization");
         var token = context.Request.Headers.Authorization.FirstOrDefault()?.Split(" ").Last();
         // If token is not found, return 401
         if (token is null) throw new UnauthorizedAccessException("Token not found");
         var userId = await tokenService.ValidateToken(token);
         // If token is invalid, return 401
         if (userId is null) throw new UnauthorizedAccessException("Invalid token");
-        var getUserByIdQuery = new GetAccountByIdQuery(userId.Value);
+        var getUserByIdQuery = new GetAccountByIdQuery(userId);
         var user = await userQueryService.Handle(getUserByIdQuery);
         // If user is not found, return 401
         if (user is null) throw new UnauthorizedAccessException("Account not found");

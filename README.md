@@ -1,12 +1,12 @@
 # EduSpace Platform
 
 [![.NET](https://img.shields.io/badge/.NET-8.0-512BD4?logo=dotnet)](https://dotnet.microsoft.com/)
-[![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?logo=mysql&logoColor=white)](https://www.mysql.com/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-8.0-47A248?logo=mongodb&logoColor=white)](https://www.mongodb.com/)
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
 
 ## 📋 Descripción
 
-EduSpace Platform es una plataforma educativa completa desarrollada con .NET 8 y MySQL, diseñada para gestionar de forma integral los procesos de una institución educativa. La plataforma incluye gestión de usuarios (IAM con JWT), perfiles de administradores y profesores, reservas de espacios, programación de reuniones, gestión de aulas y recursos, y reportes de mantenimiento.
+EduSpace Platform es una plataforma educativa completa desarrollada con .NET 8 y MongoDB, diseñada para gestionar de forma integral los procesos de una institución educativa. La plataforma incluye gestión de usuarios (IAM con JWT), perfiles de administradores y profesores, reservas de espacios, programación de reuniones, gestión de aulas y recursos, y reportes de mantenimiento.
 
 ## 🏗️ Arquitectura
 
@@ -16,17 +16,17 @@ El proyecto implementa **Clean Architecture** con **Domain-Driven Design (DDD)**
 
 - **Domain**: Entidades, agregados, value objects, comandos, queries, interfaces de repositorios y servicios de dominio
 - **Application**: Servicios de comandos y consultas, interfaces de servicios externos (ACL)
-- **Infrastructure**: Implementaciones de repositorios, servicios de hashing, tokens, y persistencia con Entity Framework Core
+- **Infrastructure**: Implementaciones de repositorios con MongoDB, servicios de hashing, tokens, y persistencia
 - **Interfaces**: Controladores REST, facades ACL, resources (DTOs) y transformadores
 
 ### Contextos Delimitados
 
 - **IAM**: Autenticación JWT, autorización, gestión de cuentas
 - **Profiles**: Perfiles de administradores y profesores
-- **Reservations**: Reservas de espacios compartidos
-- **ReservationScheduling**: Programación de reuniones con participantes
-- **SpacesAndResourceManagement**: Gestión de aulas, áreas compartidas y recursos
-- **BreakdownManagement**: Reportes de mantenimiento y averías
+- **ReservationsManagement**: Gestión de reservas de espacios
+- **MeetingsManagement**: Programación de reuniones con participantes profesores
+- **ClassroomAndSpacesManagement**: Gestión de aulas, áreas compartidas y recursos
+- **ReportsManagement**: Reportes de mantenimiento y averías
 
 ### Patrones Implementados
 
@@ -38,7 +38,7 @@ El proyecto implementa **Clean Architecture** con **Domain-Driven Design (DDD)**
 ## 📦 Requisitos Previos
 
 - **.NET 8.0 SDK** o superior
-- **MySQL 8.0**
+- **MongoDB 8.0**
 - **Docker y Docker Compose** (opcional, recomendado)
 
 ## 🚀 Instalación y Configuración
@@ -55,13 +55,13 @@ El proyecto implementa **Clean Architecture** con **Domain-Driven Design (DDD)**
 
    Crea un archivo `.env` en la raíz del proyecto (ya existe un ejemplo):
    ```env
-   MYSQL_ROOT_PASSWORD=rootpassword
-   MYSQL_DATABASE=eduspacedb
-   MYSQL_USER=eduspace
-   MYSQL_PASSWORD=eduspace1234
-   MYSQL_PORT=3307
+   MONGODB_VERSION=8.0
+   MONGODB_PORT=27017
+   MONGODB_DATABASE_NAME=eduspacedb
+   MONGODB_ROOT_USERNAME=eduspace
+   MONGODB_ROOT_PASSWORD=eduspace123
 
-   ConnectionStrings__DefaultConnection=server=localhost;port=3307;user=eduspace;password=eduspace1234;database=eduspacedb;AllowPublicKeyRetrieval=true;SslMode=none
+   MONGODB_CONNECTION_STRING=mongodb://eduspace:eduspace123@localhost:27017
    ```
 
 3. **Configura el Token JWT**:
@@ -90,19 +90,16 @@ El proyecto implementa **Clean Architecture** con **Domain-Driven Design (DDD)**
    cd eduspace-platform
    ```
 
-2. **Instala MySQL 8.0** y crea la base de datos:
-   ```sql
-   CREATE DATABASE eduspacedb;
-   CREATE USER 'eduspace'@'localhost' IDENTIFIED BY 'eduspace1234';
-   GRANT ALL PRIVILEGES ON eduspacedb.* TO 'eduspace'@'localhost';
-   FLUSH PRIVILEGES;
-   ```
+2. **Instala MongoDB 8.0**:
+   - Descarga desde [mongodb.com/try/download/community](https://www.mongodb.com/try/download/community)
+   - Inicia el servicio MongoDB en el puerto por defecto (27017)
 
-3. **Configura la cadena de conexión** en `FULLSTACKFURY.EduSpace.API/appsettings.json`:
+3. **Configura las variables de entorno** en `FULLSTACKFURY.EduSpace.API/appsettings.json`:
    ```json
    {
-     "ConnectionStrings": {
-       "DefaultConnection": "server=localhost;port=3306;user=eduspace;password=eduspace1234;database=eduspacedb"
+     "MongoDbSettings": {
+       "ConnectionString": "mongodb://localhost:27017",
+       "DatabaseName": "eduspacedb"
      },
      "TokenSettings": {
        "Secret": "tu-secret-key-muy-segura-de-al-menos-32-caracteres"
@@ -115,17 +112,12 @@ El proyecto implementa **Clean Architecture** con **Domain-Driven Design (DDD)**
    dotnet restore
    ```
 
-5. **Aplica las migraciones** (opcional, se crean automáticamente al iniciar):
-   ```bash
-   dotnet ef database update --project FULLSTACKFURY.EduSpace.API
-   ```
-
-6. **Ejecuta la aplicación**:
+5. **Ejecuta la aplicación**:
    ```bash
    dotnet run --project FULLSTACKFURY.EduSpace.API/FULLSTACKFURY.EduSpace.API.csproj
    ```
 
-7. **La API estará disponible en**: `http://localhost:8080`
+6. **La API estará disponible en**: `http://localhost:8080`
 
 ## 📚 Documentación de la API
 
@@ -180,8 +172,8 @@ Consulta el archivo `FULLSTACKFURY.EduSpace.API.http` para ver ejemplos de petic
 ### Backend
 - **.NET 8.0** - Framework principal
 - **ASP.NET Core** - APIs REST
-- **Entity Framework Core 8** - ORM y gestión de base de datos
-- **MySQL.EntityFrameworkCore** - Provider de MySQL para EF Core
+- **MongoDB.Driver** - Driver oficial de MongoDB para .NET
+- **MongoDB.Bson** - Serialización y manipulación de documentos BSON
 
 ### Seguridad
 - **BCrypt.Net-Next** - Hashing de contraseñas
@@ -189,101 +181,39 @@ Consulta el archivo `FULLSTACKFURY.EduSpace.API.http` para ver ejemplos de petic
 - **Microsoft.AspNetCore.Authentication.JwtBearer** - Middleware de autenticación JWT
 
 ### Utilidades
-- **Swashbuckle.AspNetCore** - Documentación OpenAPI/Swagger
-- **Humanizer** - Conversión de convenciones de nombres (snake_case)
-- **EntityFrameworkCore.CreatedUpdatedDate** - Auditoría automática de entidades
-- **DotNetEnv** - Gestión de variables de entorno
-
-## 🔧 Comandos de Desarrollo
-
-### Migraciones de Base de Datos
-
-```bash
-# Crear una nueva migración
-dotnet ef migrations add NombreDeLaMigracion --project FULLSTACKFURY.EduSpace.API
-
-# Aplicar migraciones pendientes
-dotnet ef database update --project FULLSTACKFURY.EduSpace.API
-
-# Revertir la última migración
-dotnet ef migrations remove --project FULLSTACKFURY.EduSpace.API
-
-# Ver el SQL de una migración
-dotnet ef migrations script --project FULLSTACKFURY.EduSpace.API
-```
-
-### Build y Testing
-
-```bash
-# Compilar el proyecto
-dotnet build
-
-# Compilar en modo Release
-dotnet build --configuration Release
-
-# Limpiar artefactos de compilación
-dotnet clean
-```
-
-## 🌐 Configuración de CORS
-
-El proyecto incluye dos políticas CORS configuradas:
-
-- **Development**: Permite cualquier origen, header y método (útil para desarrollo local)
-- **Production**: Restringido al dominio `https://eduspacewebapp.netlify.app`
-
-La política se aplica automáticamente según el entorno de ejecución.
+- **Swashbuckle.AspNetCore** - Documentación OpenAPI/Swagger con anotaciones
+- **DotNetEnv** - Gestión de variables de entorno desde archivos .env
 
 ## 📁 Estructura del Proyecto
 
 ```
 FULLSTACKFURY.EduSpace.API/
-├── IAM/                           # Gestión de identidad y acceso
+├── IAM/                                # Gestión de identidad y acceso
 │   ├── Domain/
 │   ├── Application/
 │   ├── Infrastructure/
 │   └── Interfaces/
-├── Profiles/                      # Perfiles de administradores y profesores
-├── Reservations/                  # Reservas de espacios
-├── ReservationScheduling/         # Programación de reuniones
-├── SpacesAndResourceManagement/   # Gestión de aulas y recursos
-├── BreakdownManagement/           # Reportes de mantenimiento
-├── Shared/                        # Infraestructura compartida
+├── Profiles/                           # Perfiles de administradores y profesores
+├── ReservationsManagement/             # Gestión de reservas de espacios
+├── MeetingsManagement/                 # Programación de reuniones
+├── ClassroomAndSpacesManagement/       # Gestión de aulas y recursos
+├── ReportsManagement/                  # Reportes de mantenimiento
+├── Shared/                             # Infraestructura compartida
 │   ├── Domain/
 │   └── Infrastructure/
-│       └── Persistence/EFC/
+│       └── Persistence/MongoDB/
 │           └── Configuration/
-│               └── AppDbContext.cs
-├── Migrations/                    # Migraciones de EF Core
+│               └── MongoDbContext.cs
 ├── appsettings.json
 ├── Program.cs
 └── Dockerfile
 ```
 
 Cada bounded context sigue la estructura de Clean Architecture:
-- **Domain**: Lógica de negocio pura
-- **Application**: Casos de uso
-- **Infrastructure**: Implementaciones técnicas
-- **Interfaces**: APIs REST y ACL
-
-## 🤝 Contribución
-
-¡Las contribuciones son bienvenidas! Si deseas contribuir:
-
-1. **Fork** el proyecto
-2. Crea una **rama** para tu feature:
-   ```bash
-   git checkout -b feature/nueva-funcionalidad
-   ```
-3. **Commit** tus cambios siguiendo los estándares:
-   ```bash
-   git commit -m 'feat: agrega nueva funcionalidad'
-   ```
-4. **Push** a la rama:
-   ```bash
-   git push origin feature/nueva-funcionalidad
-   ```
-5. Abre un **Pull Request**
+- **Domain**: Entidades, agregados, value objects, comandos, queries, interfaces de repositorios y servicios
+- **Application**: Implementación de servicios de comandos y consultas, servicios externos (ACL)
+- **Infrastructure**: Repositorios MongoDB, servicios de infraestructura
+- **Interfaces**: Controladores REST, facades ACL, resources (DTOs) y assemblers
 
 ### Convenciones de Commits
 
@@ -293,22 +223,3 @@ Cada bounded context sigue la estructura de Clean Architecture:
 - `refactor:` - Refactorización de código
 - `test:` - Añadir o modificar tests
 - `chore:` - Tareas de mantenimiento
-
-## 📝 Licencia
-
-Este proyecto está bajo la Licencia MIT. Consulta el archivo `LICENSE` para más detalles.
-
-## 👥 Equipo
-
-Desarrollado por **FullStackFury**
-
-## 📧 Contacto y Soporte
-
-Para preguntas, sugerencias o reportar problemas:
-
-- Abre un [issue](https://github.com/ExperimentDesign/eduspace-platform/issues) en GitHub
-- Contacta al equipo de desarrollo
-
----
-
-⭐ Si este proyecto te resulta útil, considera darle una estrella en GitHub

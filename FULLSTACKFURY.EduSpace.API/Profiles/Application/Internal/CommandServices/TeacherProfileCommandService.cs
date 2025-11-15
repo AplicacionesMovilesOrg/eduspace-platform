@@ -7,8 +7,10 @@ using FULLSTACKFURY.EduSpace.API.Shared.Domain.Repositories;
 
 namespace FULLSTACKFURY.EduSpace.API.Profiles.Application.Internal.CommandServices;
 
-public class TeacherProfileCommandService(ITeacherProfileRepository teacherProfileRepository
-    , IUnitOfWork unitOfWork, IExternalIamService externalIamService) 
+public class TeacherProfileCommandService(
+    ITeacherProfileRepository teacherProfileRepository,
+    IUnitOfWork unitOfWork,
+    IExternalIamService externalIamService)
     : ITeacherProfileCommandService
 {
     public async Task<TeacherProfile?> Handle(CreateTeacherProfileCommand command)
@@ -26,6 +28,51 @@ public class TeacherProfileCommandService(ITeacherProfileRepository teacherProfi
         catch (Exception e)
         {
             Console.WriteLine($"An error occurred while creating the profile {e.Message}");
+            return null;
+        }
+    }
+
+    public async Task Handle(DeleteTeacherProfileCommand command)
+    {
+        var teacherProfile = await teacherProfileRepository.FindByIdAsync(command.TeacherId);
+        if (teacherProfile == null) throw new ArgumentException("Teacher not found");
+
+        await teacherProfileRepository.RemoveAsync(teacherProfile);
+        await unitOfWork.CompleteAsync();
+    }
+
+    /// <summary>
+    ///     Actualiza un TeacherProfile existente.
+    /// </summary>
+    public async Task<TeacherProfile?> Handle(UpdateTeacherProfileCommand command)
+    {
+        try
+        {
+            var teacherProfile = await teacherProfileRepository
+                .FindByIdAsync(command.TeacherId);
+
+            if (teacherProfile is null)
+                throw new ArgumentException("Teacher not found");
+
+            // LLAMAMOS AL MÉTODO DE DOMINIO
+            teacherProfile.UpdateInformation(
+                command.FirstName,
+                command.LastName,
+                command.Email,
+                command.Dni,
+                command.Address,
+                command.Phone
+            );
+
+            await teacherProfileRepository.UpdateAsync(teacherProfile);
+            await unitOfWork.CompleteAsync();
+
+            return teacherProfile;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(
+                $"An error occurred while updating the profile {e.Message}");
             return null;
         }
     }
