@@ -89,13 +89,9 @@ builder.Services.AddCors(options =>
     options.AddPolicy("ProductionPolicy",
         policy =>
         {
-            policy.WithOrigins(
-                    "https://eduspacewebapp.netlify.app",
-                    "https://eduspace-platform-production-e783.up.railway.app"
-                )
+            policy.AllowAnyOrigin()
                 .AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowCredentials();
+                .AllowAnyMethod();
         });
 
     options.AddPolicy("DevelopmentPolicy",
