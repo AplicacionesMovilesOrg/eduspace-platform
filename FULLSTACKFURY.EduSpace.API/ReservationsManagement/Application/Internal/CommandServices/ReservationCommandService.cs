@@ -19,7 +19,7 @@ public class ReservationCommandService(
         if (!await profilesContextFacade.ValidateTeacherProfileIdExistence(command.TeacherId))
             throw new ArgumentException("Teacher ID does not exist.");
 
-        if (!await spacesAndResourceManagementFacade.ValidateClassroomIdExistence(command.AreaId))
+        if (!await spacesAndResourceManagementFacade.ValidateAreaIdExistence(command.AreaId))
             throw new ArgumentException("Area ID does not exist.");
 
         var reservation = new Reservation(command);
