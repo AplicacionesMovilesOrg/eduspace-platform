@@ -8,8 +8,8 @@ namespace FULLSTACKFURY.EduSpace.API.ReportsManagement.Application.Internal.Quer
 
 public class ReportQueryService : IReportQueryService
 {
-    private readonly IReportRepository _reportRepository;
     private readonly IExternalSpacesAndResourceService _externalSpacesAndResourceService;
+    private readonly IReportRepository _reportRepository;
 
     public ReportQueryService(
         IReportRepository reportRepository,
