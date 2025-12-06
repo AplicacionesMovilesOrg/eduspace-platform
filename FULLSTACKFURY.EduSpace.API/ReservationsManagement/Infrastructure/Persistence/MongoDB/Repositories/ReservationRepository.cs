@@ -40,4 +40,12 @@ public class ReservationRepository : BaseRepository<Reservation>, IReservationRe
             r.ReservationDate.Start.Month == month &&
             r.ReservationDate.Start.Day == day);
     }
+
+    /// <summary>
+    ///     Find all reservations by teacher ID
+    /// </summary>
+    public async Task<IEnumerable<Reservation>> FindAllByTeacherIdAsync(string teacherId)
+    {
+        return await FindAllAsync(r => r.TeacherId.TeacherIdentifier == teacherId);
+    }
 }

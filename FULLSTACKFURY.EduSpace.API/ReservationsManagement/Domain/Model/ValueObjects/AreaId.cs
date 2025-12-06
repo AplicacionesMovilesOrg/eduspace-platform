@@ -15,5 +15,5 @@ public record AreaId
         Identifier = string.Empty;
     }
 
-    [BsonElement("identifier")] public string Identifier { get; init; }
+    [BsonElement("identifier")] public string Identifier { get; init; } = string.Empty;
 }

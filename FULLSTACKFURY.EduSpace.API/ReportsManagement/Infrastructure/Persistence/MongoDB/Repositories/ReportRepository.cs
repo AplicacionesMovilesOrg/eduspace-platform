@@ -21,4 +21,16 @@ public class ReportRepository : BaseRepository<Report>, IReportRepository
     {
         return await FindAllAsync(r => r.ResourceId.Id == resourceId);
     }
+
+    /// <summary>
+    ///     Find all reports by multiple resource IDs
+    /// </summary>
+    public async Task<IEnumerable<Report>> FindAllByResourceIdsAsync(IEnumerable<string> resourceIds)
+    {
+        var resourceIdList = resourceIds.ToList();
+        if (!resourceIdList.Any())
+            return Enumerable.Empty<Report>();
+
+        return await FindAllAsync(r => resourceIdList.Contains(r.ResourceId.Id));
+    }
 }

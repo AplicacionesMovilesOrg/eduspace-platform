@@ -48,9 +48,9 @@ public partial class Meeting
     [BsonRepresentation(BsonType.ObjectId)]
     public string Id { get; set; } = ObjectId.GenerateNewId().ToString();
 
-    [BsonElement("title")] public string Title { get; private set; }
+    [BsonElement("title")] public string Title { get; private set; } = string.Empty;
 
-    [BsonElement("description")] public string Description { get; private set; }
+    [BsonElement("description")] public string Description { get; private set; } = string.Empty;
 
     [BsonElement("date")] public DateOnly Date { get; private set; }
 
@@ -58,9 +58,9 @@ public partial class Meeting
 
     [BsonElement("end_time")] public TimeOnly EndTime { get; private set; }
 
-    [BsonElement("administrator_id")] public AdministratorId AdministratorId { get; private set; }
+    [BsonElement("administrator_id")] public AdministratorId AdministratorId { get; private set; } = null!;
 
-    [BsonElement("classroom_id")] public ClassroomId ClassroomId { get; private set; }
+    [BsonElement("classroom_id")] public ClassroomId ClassroomId { get; private set; } = null!;
 
     public void UpdateTitle(string? title)
     {

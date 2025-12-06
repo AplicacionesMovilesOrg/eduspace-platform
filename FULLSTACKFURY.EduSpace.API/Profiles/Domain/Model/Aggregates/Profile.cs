@@ -30,7 +30,7 @@ public class Profile
     [BsonElement("profile_private_information")]
     public ProfilePrivateInformation ProfilePrivateInformation { get; set; }
 
-    [BsonElement("account_id")] public AccountId AccountId { get; private set; }
+    [BsonElement("account_id")] public AccountId AccountId { get; private set; } = null!;
 
     [BsonElement("created_date")] public DateTimeOffset? CreatedDate { get; set; }
 

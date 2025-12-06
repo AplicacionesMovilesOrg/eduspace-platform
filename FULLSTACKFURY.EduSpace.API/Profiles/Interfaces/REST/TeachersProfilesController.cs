@@ -69,6 +69,19 @@ public class TeachersProfilesController(
     }
 
     // ---------------------------------------------------------
+    // READ BY ACCOUNT ID
+    // ---------------------------------------------------------
+    [HttpGet("account/{accountId}")]
+    public async Task<IActionResult> GetTeacherProfileByAccountId([FromRoute] string accountId)
+    {
+        var teacher = await teacherQueryService.Handle(new GetTeacherProfileByAccountIdQuery(new AccountId(accountId)));
+        if (teacher is null) return NotFound();
+
+        var resource = TeacherProfileResourceFromEntityAssembler.ToResourceFromEntity(teacher);
+        return Ok(resource);
+    }
+
+    // ---------------------------------------------------------
     // UPDATE
     // ---------------------------------------------------------
     [HttpPut("{teacherId}")]

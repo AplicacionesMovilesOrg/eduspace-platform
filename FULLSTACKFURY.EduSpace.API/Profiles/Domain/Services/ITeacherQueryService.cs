@@ -7,4 +7,5 @@ public interface ITeacherQueryService
 {
     Task<IEnumerable<TeacherProfile>> Handle(GetAllTeachersProfileQuery query);
     Task<TeacherProfile?> Handle(GetTeacherProfileByIdQuery query);
+    Task<TeacherProfile?> Handle(GetTeacherProfileByAccountIdQuery query);
 }

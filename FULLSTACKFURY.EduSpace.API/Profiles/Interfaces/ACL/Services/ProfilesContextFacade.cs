@@ -12,6 +12,11 @@ public class ProfilesContextFacade(
         return await teacherProfileRepository.ExistsByTeacherProfileId(teacherId);
     }
 
+    public async Task<bool> ValidateTeacherAccountIdExistence(string accountId)
+    {
+        return await teacherProfileRepository.ExistsByAccountId(accountId);
+    }
+
     public async Task<bool> ValidateAdminProfileIdExistence(string adminId)
     {
         return await adminProfileRepository.ExistsByAdminProfileId(adminId);

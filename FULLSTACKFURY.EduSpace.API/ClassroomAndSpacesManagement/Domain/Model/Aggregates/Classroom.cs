@@ -54,11 +54,11 @@ public class Classroom
     [BsonRepresentation(BsonType.ObjectId)]
     public string Id { get; set; } = ObjectId.GenerateNewId().ToString();
 
-    [BsonElement("name")] public string Name { get; private set; }
+    [BsonElement("name")] public string Name { get; private set; } = string.Empty;
 
-    [BsonElement("description")] public string Description { get; private set; }
+    [BsonElement("description")] public string Description { get; private set; } = string.Empty;
 
-    [BsonElement("teacher_id")] public TeacherId TeacherId { get; private set; }
+    [BsonElement("teacher_id")] public TeacherId TeacherId { get; private set; } = null!;
 
     [BsonElement("resources")] public ICollection<Resource> Resources { get; private set; } = new List<Resource>();
 

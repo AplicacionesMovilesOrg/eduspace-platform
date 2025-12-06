@@ -16,7 +16,7 @@ public class SharedAreaResourceFromEntityAssembler
     /// <returns>
     ///     The resulting <see cref="SharedAreaResource" /> resource with the values from the entity
     /// </returns>
-    public static SharedAreaResource ToResourceFromEntity(Domain.Model.Aggregates.SharedArea entity)
+    public static SharedAreaResource? ToResourceFromEntity(Domain.Model.Aggregates.SharedArea? entity)
     {
         if (entity is null) return null;
         return new SharedAreaResource(entity.Id, entity.Name, entity.Capacity, entity.Description);

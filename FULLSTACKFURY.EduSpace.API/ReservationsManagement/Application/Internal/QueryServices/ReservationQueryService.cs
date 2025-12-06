@@ -21,4 +21,9 @@ public class ReservationQueryService(IReservationRepository reservationRepositor
     {
         return reservationRepository.FindAllByAreaIdMonthAndDayAsync(query.AreaId, query.Month, query.Day);
     }
+
+    public Task<IEnumerable<Reservation>> Handle(GetAllReservationsByTeacherIdQuery query)
+    {
+        return reservationRepository.FindAllByTeacherIdAsync(query.TeacherId);
+    }
 }

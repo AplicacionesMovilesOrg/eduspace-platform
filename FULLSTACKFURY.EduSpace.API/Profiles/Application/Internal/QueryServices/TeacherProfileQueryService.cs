@@ -16,4 +16,9 @@ public class TeacherProfileQueryService(ITeacherProfileRepository teacherProfile
     {
         return await teacherProfileRepository.FindByIdAsync(query.ProfileId);
     }
+
+    public async Task<TeacherProfile?> Handle(GetTeacherProfileByAccountIdQuery query)
+    {
+        return await teacherProfileRepository.FindByAccountIdAsync(query.AccountId);
+    }
 }

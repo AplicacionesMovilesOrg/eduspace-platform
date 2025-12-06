@@ -25,5 +25,5 @@ public class TeacherProfile : Profile
     {
     }
 
-    [BsonElement("administrator_id")] public string AdministratorId { get; private set; }
+    [BsonElement("administrator_id")] public string AdministratorId { get; private set; } = string.Empty;
 }

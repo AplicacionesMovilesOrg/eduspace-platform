@@ -18,18 +18,24 @@ public class RequestAuthorizationMiddleware(RequestDelegate next)
 
         // Check if the endpoint has AllowAnonymousAttribute (either custom or ASP.NET Core). If it does, skip authorization
         var endpoint = context.GetEndpoint();
-        if (endpoint != null)
-        {
-            var allowAnonymous = endpoint.Metadata.Any(m =>
-                m is AllowAnonymousAttribute ||
-                m is IAllowAnonymous);
 
-            if (allowAnonymous)
-            {
-                Console.WriteLine($"✅ AllowAnonymous detected for: {context.Request.Path}");
-                await next(context);
-                return;
-            }
+        // If endpoint is null (route not found), skip authorization and let ASP.NET Core handle the 404
+        if (endpoint == null)
+        {
+            Console.WriteLine($"⚠️ Endpoint not found, skipping authorization: {context.Request.Path}");
+            await next(context);
+            return;
+        }
+
+        var allowAnonymous = endpoint.Metadata.Any(m =>
+            m is AllowAnonymousAttribute ||
+            m is IAllowAnonymous);
+
+        if (allowAnonymous)
+        {
+            Console.WriteLine($"✅ AllowAnonymous detected for: {context.Request.Path}");
+            await next(context);
+            return;
         }
 
         Console.WriteLine($"🔒 Authorization required for: {context.Request.Path}");

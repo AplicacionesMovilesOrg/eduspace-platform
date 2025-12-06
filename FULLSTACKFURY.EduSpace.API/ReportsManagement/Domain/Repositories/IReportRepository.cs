@@ -6,4 +6,5 @@ namespace FULLSTACKFURY.EduSpace.API.ReportsManagement.Domain.Repositories;
 public interface IReportRepository : IBaseRepository<Report>
 {
     Task<IEnumerable<Report>> FindAllByResourceIdAsync(string resourceId);
+    Task<IEnumerable<Report>> FindAllByResourceIdsAsync(IEnumerable<string> resourceIds);
 }

@@ -61,6 +61,30 @@ public class ResourceRepository : BaseRepository<Resource>, IResourceRepository
             .ToListAsync();
     }
 
+    /// <summary>
+    ///     Find resources by multiple classroom IDs
+    /// </summary>
+    public async Task<IEnumerable<Resource>> FindByClassroomIdsAsync(IEnumerable<string> classroomIds)
+    {
+        var objectIds = classroomIds
+            .Select(id => ObjectId.TryParse(id, out var objectId) ? objectId : (ObjectId?)null)
+            .Where(id => id.HasValue)
+            .Select(id => id!.Value)
+            .ToList();
+
+        if (!objectIds.Any())
+            return Enumerable.Empty<Resource>();
+
+        var filter = Builders<Resource>.Filter.In("ClassroomId", objectIds);
+
+        return await Collection.Aggregate()
+            .Match(filter)
+            .Lookup("classrooms", "ClassroomId", "_id", "Classroom")
+            .Unwind("Classroom")
+            .As<Resource>()
+            .ToListAsync();
+    }
+
 
     /// <summary>
     ///     Check if a resource exists with the given name

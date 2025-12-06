@@ -1,4 +1,5 @@
 using FULLSTACKFURY.EduSpace.API.Profiles.Domain.Model.Aggregates;
+using FULLSTACKFURY.EduSpace.API.Profiles.Domain.Model.ValueObjects;
 using FULLSTACKFURY.EduSpace.API.Profiles.Domain.Repositories;
 using FULLSTACKFURY.EduSpace.API.Shared.Infrastructure.Persistence.MongoDB.Repositories;
 using MongoDB.Driver;
@@ -26,8 +27,18 @@ public class TeacherProfileRepository
         return await ExistsAsync(profile => profile.Id == teacherProfileId);
     }
 
+    public async Task<bool> ExistsByAccountId(string accountId)
+    {
+        return await ExistsAsync(profile => profile.AccountId.Id == accountId);
+    }
+
     public async Task RemoveAsync(TeacherProfile teacherProfile)
     {
         await base.RemoveAsync(teacherProfile.Id);
+    }
+
+    public async Task<TeacherProfile?> FindByAccountIdAsync(AccountId accountId)
+    {
+        return await FindAsync(profile => profile.AccountId.Id == accountId.Id);
     }
 }

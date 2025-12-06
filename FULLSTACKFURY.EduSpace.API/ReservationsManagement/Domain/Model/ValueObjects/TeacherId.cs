@@ -15,5 +15,5 @@ public record TeacherId
         TeacherIdentifier = string.Empty;
     }
 
-    [BsonElement("teacher_identifier")] public string TeacherIdentifier { get; init; }
+    [BsonElement("teacher_identifier")] public string TeacherIdentifier { get; init; } = string.Empty;
 }

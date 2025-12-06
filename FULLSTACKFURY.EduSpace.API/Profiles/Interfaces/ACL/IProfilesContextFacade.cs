@@ -5,6 +5,7 @@ namespace FULLSTACKFURY.EduSpace.API.Profiles.Interfaces.ACL;
 public interface IProfilesContextFacade
 {
     Task<bool> ValidateTeacherProfileIdExistence(string teacherId);
+    Task<bool> ValidateTeacherAccountIdExistence(string accountId);
     Task<bool> ValidateAdminProfileIdExistence(string adminId);
     Task<TeacherProfile?> GetTeacherProfileById(string teacherId);
     Task<IEnumerable<TeacherProfile>> GetTeacherProfilesByIds(IEnumerable<string> teacherIds);

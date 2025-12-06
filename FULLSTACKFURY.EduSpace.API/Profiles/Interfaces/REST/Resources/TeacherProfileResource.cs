@@ -7,4 +7,5 @@ public record TeacherProfileResource(
     string Email,
     string Dni,
     string Address,
-    string Phone);
+    string Phone,
+    string AccountId);

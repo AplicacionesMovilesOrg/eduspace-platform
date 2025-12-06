@@ -4,7 +4,8 @@ namespace FULLSTACKFURY.EduSpace.API.ClassroomAndSpacesManagement.Interfaces.ACL
 
 public class SpacesAndResourceManagementFacade(
     IClassroomRepository classroomRepository,
-    ISharedAreaRepository sharedAreaRepository)
+    ISharedAreaRepository sharedAreaRepository,
+    IResourceRepository resourceRepository)
     : ISpacesAndResourceManagementFacade
 {
     public async Task<bool> ValidateClassroomIdExistence(string classroomId)
@@ -19,5 +20,17 @@ public class SpacesAndResourceManagementFacade(
 
         var sharedArea = await sharedAreaRepository.FindByIdAsync(areaId);
         return sharedArea != null;
+    }
+
+    public async Task<IEnumerable<string>> GetResourceIdsByTeacherIdAsync(string teacherId)
+    {
+        var classrooms = await classroomRepository.FindByTeacherIdAsync(teacherId);
+        var classroomIds = classrooms.Select(c => c.Id).ToList();
+
+        if (!classroomIds.Any())
+            return Enumerable.Empty<string>();
+
+        var resources = await resourceRepository.FindByClassroomIdsAsync(classroomIds);
+        return resources.Select(r => r.Id);
     }
 }

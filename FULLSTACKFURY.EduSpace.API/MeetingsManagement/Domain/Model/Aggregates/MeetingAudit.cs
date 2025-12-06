@@ -9,11 +9,11 @@ public class MeetingAudit
     [BsonRepresentation(BsonType.ObjectId)]
     public string Id { get; set; } = ObjectId.GenerateNewId().ToString();
 
-    [BsonElement("meeting_id")] public string MeetingId { get; set; }
+    [BsonElement("meeting_id")] public string MeetingId { get; set; } = string.Empty;
 
-    [BsonElement("action")] public string Action { get; set; }
+    [BsonElement("action")] public string Action { get; set; } = string.Empty;
 
-    [BsonElement("action_performed_by")] public string ActionPerformedBy { get; set; }
+    [BsonElement("action_performed_by")] public string ActionPerformedBy { get; set; } = string.Empty;
 
     [BsonElement("created_at")] public DateTimeOffset? CreatedDate { get; set; }
 
