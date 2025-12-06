@@ -54,11 +54,11 @@ public class Resource
     [Key]
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]
-    public string Id { get; set; }
+    public string Id { get; set; } = ObjectId.GenerateNewId().ToString();
 
-    public string Name { get; private set; }
-    public string KindOfResource { get; private set; }
-    public Classroom Classroom { get; internal set; }
+    public string Name { get; private set; } = string.Empty;
+    public string KindOfResource { get; private set; } = string.Empty;
+    public Classroom Classroom { get; internal set; } = null!;
 
     [BsonRepresentation(BsonType.ObjectId)]
     public ObjectId ClassroomId { get; private set; }

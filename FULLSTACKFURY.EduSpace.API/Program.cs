@@ -36,6 +36,7 @@ using FULLSTACKFURY.EduSpace.API.Profiles.Infrastructure.Persistence.MongoDB.Rep
 using FULLSTACKFURY.EduSpace.API.Profiles.Interfaces.ACL;
 using FULLSTACKFURY.EduSpace.API.Profiles.Interfaces.ACL.Services;
 using FULLSTACKFURY.EduSpace.API.ReportsManagement.Application.Internal.CommandServices;
+using FULLSTACKFURY.EduSpace.API.ReportsManagement.Application.Internal.OutboundServices;
 using FULLSTACKFURY.EduSpace.API.ReportsManagement.Application.Internal.QueryServices;
 using FULLSTACKFURY.EduSpace.API.ReportsManagement.Domain.Repositories;
 using FULLSTACKFURY.EduSpace.API.ReportsManagement.Domain.Services;
@@ -89,13 +90,9 @@ builder.Services.AddCors(options =>
     options.AddPolicy("ProductionPolicy",
         policy =>
         {
-            policy.WithOrigins(
-                    "https://eduspacewebapp.netlify.app",
-                    "https://eduspace-platform-production-e783.up.railway.app"
-                )
+            policy.AllowAnyOrigin()
                 .AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowCredentials();
+                .AllowAnyMethod();
         });
 
     options.AddPolicy("DevelopmentPolicy",
@@ -208,6 +205,7 @@ builder.Services.AddScoped<IReportRepository>(sp =>
     return new ReportRepository(context.Reports);
 });
 builder.Services.AddScoped<IReportCommandService, ReportCommandService>();
+builder.Services.AddScoped<IExternalSpacesAndResourceService, ExternalSpacesAndResourceService>();
 builder.Services.AddScoped<IReportQueryService, ReportQueryService>();
 
 //Reservation Scheduling

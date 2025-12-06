@@ -51,4 +51,21 @@ public class ReportsController(IReportCommandService reportCommandService, IRepo
 
         return Ok(resources);
     }
+
+    [HttpGet("teachers/{teacherId}")]
+    [SwaggerOperation(
+        Summary = "Gets all reports by teacher ID",
+        Description = "Gets all reports for resources that belong to classrooms assigned to a specific teacher",
+        OperationId = "GetAllReportsByTeacherId"
+    )]
+    [SwaggerResponse(200, "The reports were retrieved successfully", typeof(IEnumerable<ReportResource>))]
+    public async Task<IActionResult> GetAllReportsByTeacherId([FromRoute] string teacherId)
+    {
+        var getAllReportsByTeacherIdQuery = new GetAllReportsByTeacherIdQuery(teacherId);
+        var reports = await reportQueryService.Handle(getAllReportsByTeacherIdQuery);
+
+        var resources = reports.Select(ReportResourceFromEntityAssembler.ToResourceFromEntity);
+
+        return Ok(resources);
+    }
 }

@@ -46,6 +46,6 @@ public class MeetingQueryService(
         var teachersList = teachers.ToList();
 
         foreach (var participant in meeting.MeetingParticipants)
-            participant.Teacher = teachersList.FirstOrDefault(t => t.Id == participant.TeacherId);
+            participant.Teacher = teachersList.FirstOrDefault(t => t.Id == participant.TeacherId)!;
     }
 }

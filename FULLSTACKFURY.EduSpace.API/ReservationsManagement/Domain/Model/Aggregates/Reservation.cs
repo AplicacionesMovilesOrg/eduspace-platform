@@ -32,13 +32,13 @@ public class Reservation
     [BsonRepresentation(BsonType.ObjectId)]
     public string Id { get; set; } = ObjectId.GenerateNewId().ToString();
 
-    [BsonElement("title")] public string Title { get; private set; }
+    [BsonElement("title")] public string Title { get; private set; } = string.Empty;
 
-    [BsonElement("reservation_date")] public ReservationDate ReservationDate { get; private set; }
+    [BsonElement("reservation_date")] public ReservationDate ReservationDate { get; private set; } = null!;
 
-    [BsonElement("area_id")] public AreaId AreaId { get; private set; }
+    [BsonElement("area_id")] public AreaId AreaId { get; private set; } = null!;
 
-    [BsonElement("teacher_id")] public TeacherId TeacherId { get; private set; }
+    [BsonElement("teacher_id")] public TeacherId TeacherId { get; private set; } = null!;
 
     public void UpdateReservationDate(DateTime start, DateTime end)
     {

@@ -16,13 +16,33 @@ public class ReservationCommandService(
 {
     public async Task<Reservation?> Handle(CreateReservationCommand command)
     {
-        if (!await profilesContextFacade.ValidateTeacherProfileIdExistence(command.TeacherId))
+        // Validate teacher exists by account ID
+        if (!await profilesContextFacade.ValidateTeacherAccountIdExistence(command.TeacherId))
             throw new ArgumentException("Teacher ID does not exist.");
 
-        if (!await spacesAndResourceManagementFacade.ValidateClassroomIdExistence(command.AreaId))
+        // Validate area exists
+        if (!await spacesAndResourceManagementFacade.ValidateAreaIdExistence(command.AreaId))
             throw new ArgumentException("Area ID does not exist.");
 
+        // Validate date range
+        if (command.Start >= command.End)
+            throw new ArgumentException("Start date must be before end date.");
+
+        // Validate not in the past
+        if (command.Start < DateTime.UtcNow)
+            throw new ArgumentException("Cannot create reservations in the past.");
+
+        // Validate maximum duration (e.g., 8 hours)
+        var duration = command.End - command.Start;
+        if (duration.TotalHours > 8)
+            throw new ArgumentException("Reservation duration cannot exceed 8 hours.");
+
         var reservation = new Reservation(command);
+
+        // Check for time conflicts
+        var existingReservations = await reservationRepository.FindAllByAreaIdAsync(command.AreaId);
+        if (!reservation.CanReserve(existingReservations))
+            throw new InvalidOperationException("The selected time slot is already reserved.");
 
         await reservationRepository.AddAsync(reservation);
         await unitOfWork.CompleteAsync();

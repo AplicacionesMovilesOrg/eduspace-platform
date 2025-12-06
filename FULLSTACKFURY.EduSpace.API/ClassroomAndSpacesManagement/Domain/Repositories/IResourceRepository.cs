@@ -25,6 +25,17 @@ public interface IResourceRepository : IBaseRepository<Resource>
     Task<IEnumerable<Resource>> FindByClassroomIdAsync(string classroomId);
 
     /// <summary>
+    ///     Finds resources by multiple classroom IDs.
+    /// </summary>
+    /// <param name="classroomIds">
+    ///     The list of classroom IDs.
+    /// </param>
+    /// <returns>
+    ///     A collection of resources that belong to the specified classrooms.
+    /// </returns>
+    Task<IEnumerable<Resource>> FindByClassroomIdsAsync(IEnumerable<string> classroomIds);
+
+    /// <summary>
     ///     Verifies if  a resource exists by its name.
     /// </summary>
     /// <param name="name">

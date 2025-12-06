@@ -22,11 +22,11 @@ public class Account
     [BsonRepresentation(BsonType.ObjectId)]
     public string Id { get; set; } = ObjectId.GenerateNewId().ToString();
 
-    [BsonElement("username")] public string Username { get; private set; }
+    [BsonElement("username")] public string Username { get; private set; } = string.Empty;
 
     [BsonElement("password_hash")]
     [JsonIgnore]
-    public string PasswordHash { get; private set; }
+    public string PasswordHash { get; private set; } = string.Empty;
 
     [BsonElement("role")]
     [BsonRepresentation(BsonType.String)]

@@ -68,4 +68,21 @@ public class ReservationsController(
 
         return Ok(resources);
     }
+
+    [HttpGet("teachers/{teacherId}/[controller]")]
+    [SwaggerOperation(
+        Summary = "Gets reservations by teacher ID",
+        Description = "Gets all reservations for a specific teacher",
+        OperationId = "GetAllReservationsByTeacherId"
+    )]
+    [SwaggerResponse(200, "Reservations retrieved successfully", typeof(IEnumerable<ReservationResource>))]
+    public async Task<IActionResult> GetAllReservationsByTeacherId([FromRoute] string teacherId)
+    {
+        var getAllReservationsByTeacherIdQuery = new GetAllReservationsByTeacherIdQuery(teacherId);
+        var reservations = await reservationQueryService.Handle(getAllReservationsByTeacherIdQuery);
+
+        var resources = reservations.Select(ReservationResourceFromEntityAssembler.ToResourceFromEntity);
+
+        return Ok(resources);
+    }
 }

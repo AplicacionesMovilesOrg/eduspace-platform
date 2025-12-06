@@ -10,7 +10,7 @@ public partial class Meeting
     [BsonElement("meeting_participants")]
     public ICollection<MeetingSession> MeetingParticipants { get; set; } = new List<MeetingSession>();
 
-    [NotMapped] public TeacherId TeacherId { get; set; }
+    [NotMapped] public TeacherId TeacherId { get; set; } = null!;
 
     public void AddTeacherToMeeting(string teacherId)
     {

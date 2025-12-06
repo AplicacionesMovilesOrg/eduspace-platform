@@ -41,13 +41,13 @@ public class Report
 
     [BsonElement("description")] public string Description { get; set; }
 
-    [BsonElement("resource_id")] public ResourceId ResourceId { get; set; }
+    [BsonElement("resource_id")] public ResourceId ResourceId { get; set; } = null!;
 
     [BsonElement("created_at")] public DateTime CreatedAt { get; set; }
 
     [BsonElement("status")]
     [BsonRepresentation(BsonType.String)]
-    public string StatusValue { get; set; } // Store as string in MongoDB
+    public string StatusValue { get; set; } = "in progress"; // Store as string in MongoDB
 
     [BsonIgnore]
     public ReportStatus Status

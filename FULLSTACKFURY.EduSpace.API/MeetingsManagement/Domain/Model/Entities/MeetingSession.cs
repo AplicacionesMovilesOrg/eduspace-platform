@@ -16,11 +16,11 @@ public class MeetingSession
         MeetingId = meetingId;
     }
 
-    [BsonElement("meeting_id")] public string MeetingId { get; set; }
+    [BsonElement("meeting_id")] public string MeetingId { get; set; } = string.Empty;
 
-    [BsonElement("teacher_id")] public string TeacherId { get; set; }
+    [BsonElement("teacher_id")] public string TeacherId { get; set; } = string.Empty;
 
-    [BsonIgnore] public Meeting Meeting { get; set; }
+    [BsonIgnore] public Meeting Meeting { get; set; } = null!;
 
-    [BsonIgnore] public TeacherProfile Teacher { get; set; }
+    [BsonIgnore] public TeacherProfile Teacher { get; set; } = null!;
 }
